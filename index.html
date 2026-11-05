@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Конспект + задания с рисунками по теме, разбором и ответами (PDF) — 5 класс</title>
+<title>Задания для учеников и учителя (PDF) — 5 класс</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -40,8 +40,10 @@
     .btn-primary:hover { background: #0f4273; }
     .btn-accent { background: #27ae60; border-color: #27ae60; color: white; }
     .btn-accent:hover { background: #1e8b4c; border-color: #1e8b4c; }
-    .btn-pdf { background: #c0392b; border-color: #c0392b; color: white; }
-    .btn-pdf:hover { background: #962d22; border-color: #962d22; }
+    .btn-pdf-student { background: #2980b9; border-color: #2980b9; color: white; }
+    .btn-pdf-student:hover { background: #1f6391; border-color: #1f6391; }
+    .btn-pdf-teacher { background: #c0392b; border-color: #c0392b; color: white; }
+    .btn-pdf-teacher:hover { background: #962d22; border-color: #962d22; }
     .btn-answers { background: #8e44ad; border-color: #8e44ad; color: white; }
     .btn-answers:hover { background: #6c3483; border-color: #6c3483; }
     .badge { display: inline-block; background: #d9e9ff; color: #155799; font-size: 0.78rem; padding: 3px 10px; border-radius: 30px; margin-left: 6px; font-weight: 600; }
@@ -73,8 +75,8 @@
 </head>
 <body>
 <div class="app">
-    <h1>📘 Конспект + задания с рисунками по теме, разбором и ответами <small>5 класс, PDF</small></h1>
-    <div class="subhead">⚡ Выберите тему → номер урока → получите задания с рисунками строго по теме, разбором и ответами. Скачайте PDF.</div>
+    <h1>📘 Задания для учеников и учителя <small>5 класс, PDF</small></h1>
+    <div class="subhead">⚡ Выберите тему → номер урока. Скачайте <b>отдельный PDF для учеников</b> (только задания + рисунок) и <b>отдельный PDF для учителя</b> (задания + рисунок + разбор + ответы).</div>
 
     <!-- Тема -->
     <div class="field">
@@ -106,7 +108,7 @@
 
     <div class="field">
         <label>📖 Конспект урока (можно редактировать)</label>
-        <textarea id="lessonPlan" rows="14" placeholder="Выберите тему и номер урока — конспект появится здесь"></textarea>
+        <textarea id="lessonPlan" rows="12" placeholder="Выберите тему и номер урока — конспект появится здесь"></textarea>
     </div>
 
     <div class="field">
@@ -114,14 +116,14 @@
         <textarea id="tasks" rows="18" placeholder="Выберите тему и номер урока — задания появятся здесь"></textarea>
     </div>
 
-    <!-- Кнопка показать/скрыть ответы в предпросмотре -->
+    <!-- Кнопка показать/скрыть разбор и ответы в предпросмотре -->
     <div style="margin-bottom:16px;">
-        <button class="btn btn-answers" id="toggleAnswersBtn" type="button">👁 Показать ответы в предпросмотре</button>
+        <button class="btn btn-answers" id="toggleAnswersBtn" type="button">👁 Показать разбор и ответы (для учителя)</button>
     </div>
 
     <!-- Превью рисунка по теме -->
     <div class="geo-preview" id="geoPreview">
-        <h4>📐 Рисунок строго по теме (будет в заданиях и разборе)</h4>
+        <h4>📐 Рисунок строго по теме (в заданиях и в разборе)</h4>
         <div id="geoDrawings"></div>
     </div>
 
@@ -134,7 +136,8 @@
 
     <div class="btn-group">
         <button class="btn" id="clearBtn" type="button">🗑 Очистить</button>
-        <button class="btn btn-pdf" id="pdfBtn" type="button">📄 Скачать задания в PDF</button>
+        <button class="btn btn-pdf-student" id="pdfStudentBtn" type="button">📄 Задания для учеников (PDF)</button>
+        <button class="btn btn-pdf-teacher" id="pdfTeacherBtn" type="button">📄 Задания для учителя (PDF)</button>
         <button class="btn" id="saveHtmlBtn" type="button">💾 Скачать HTML</button>
         <button class="btn btn-primary" id="updatePreviewBtn" type="button">🔄 Обновить</button>
     </div>
@@ -329,146 +332,36 @@
     /* ============================================================
        РИСУНКИ СТРОГО ПО ТЕМЕ
        ============================================================ */
-    // Каждый рисунок — объект { svg: '...', caption: '...' }
     const TOPIC_DRAWINGS = {
-        // --- Линии ---
-        'point': {
-            caption: 'Точка A',
-            svg: `<svg width="120" height="70" viewBox="0 0 120 70"><circle cx="60" cy="35" r="4" fill="#c0392b"/><text x="70" y="30" font-size="13" fill="#1e3a5f">A</text></svg>`
-        },
-        'line': {
-            caption: 'Прямая AB',
-            svg: `<svg width="200" height="70" viewBox="0 0 200 70"><line x1="10" y1="35" x2="190" y2="35" stroke="#1e5b9c" stroke-width="2"/><circle cx="10" cy="35" r="3" fill="#c0392b"/><circle cx="190" cy="35" r="3" fill="#c0392b"/><text x="6" y="55" font-size="12" fill="#c0392b">A</text><text x="186" y="55" font-size="12" fill="#c0392b">B</text></svg>`
-        },
-        'segment': {
-            caption: 'Отрезок CD длиной a',
-            svg: `<svg width="200" height="70" viewBox="0 0 200 70"><line x1="20" y1="35" x2="180" y2="35" stroke="#1e5b9c" stroke-width="2"/><circle cx="20" cy="35" r="3" fill="#c0392b"/><circle cx="180" cy="35" r="3" fill="#c0392b"/><text x="16" y="55" font-size="12" fill="#c0392b">C</text><text x="176" y="55" font-size="12" fill="#c0392b">D</text><text x="90" y="28" font-size="12" fill="#1e5b9c">a</text></svg>`
-        },
-        'ray': {
-            caption: 'Луч EF',
-            svg: `<svg width="200" height="70" viewBox="0 0 200 70"><line x1="20" y1="35" x2="180" y2="35" stroke="#1e5b9c" stroke-width="2"/><circle cx="20" cy="35" r="3" fill="#c0392b"/><text x="16" y="55" font-size="12" fill="#c0392b">E</text><text x="176" y="55" font-size="12" fill="#c0392b">F</text><polygon points="180,35 172,30 172,40" fill="#1e5b9c"/></svg>`
-        },
-        'polyline': {
-            caption: 'Ломаная из трёх звеньев',
-            svg: `<svg width="220" height="90" viewBox="0 0 220 90"><polyline points="20,70 80,20 140,60 200,25" fill="none" stroke="#1e5b9c" stroke-width="2"/><circle cx="20" cy="70" r="3" fill="#c0392b"/><circle cx="80" cy="20" r="3" fill="#c0392b"/><circle cx="140" cy="60" r="3" fill="#c0392b"/><circle cx="200" cy="25" r="3" fill="#c0392b"/></svg>`
-        },
-        'circle': {
-            caption: 'Окружность с радиусом R и диаметром D',
-            svg: `<svg width="180" height="140" viewBox="0 0 180 140"><circle cx="90" cy="70" r="45" fill="none" stroke="#27ae60" stroke-width="2"/><circle cx="90" cy="70" r="3" fill="#1e5b9c"/><line x1="90" y1="70" x2="135" y2="70" stroke="#c0392b" stroke-width="2"/><line x1="45" y1="70" x2="135" y2="70" stroke="#8e44ad" stroke-width="1.5" stroke-dasharray="4,3"/><text x="110" y="64" font-size="11" fill="#c0392b">R</text><text x="88" y="58" font-size="11" fill="#8e44ad">O</text><text x="140" y="64" font-size="11" fill="#1e3a5f">D</text></svg>`
-        },
-        'angle': {
-            caption: 'Угол ∠ABC',
-            svg: `<svg width="180" height="120" viewBox="0 0 180 120"><line x1="30" y1="95" x2="150" y2="95" stroke="#1e5b9c" stroke-width="2"/><line x1="30" y1="95" x2="110" y2="20" stroke="#1e5b9c" stroke-width="2"/><path d="M 55 95 A 25 25 0 0 0 50 75" fill="none" stroke="#c0392b" stroke-width="1.5"/><text x="58" y="85" font-size="11" fill="#c0392b">∠</text><text x="20" y="112" font-size="12" fill="#c0392b">B</text><text x="146" y="112" font-size="12" fill="#c0392b">C</text><text x="112" y="18" font-size="12" fill="#c0392b">A</text></svg>`
-        },
-        'angle_types': {
-            caption: 'Прямой (90°), острый (<90°), тупой (>90°)',
-            svg: `<svg width="300" height="110" viewBox="0 0 300 110">
+        'point': { caption: 'Точка A', svg: `<svg width="120" height="70" viewBox="0 0 120 70"><circle cx="60" cy="35" r="4" fill="#c0392b"/><text x="70" y="30" font-size="13" fill="#1e3a5f">A</text></svg>` },
+        'line': { caption: 'Прямая AB', svg: `<svg width="200" height="70" viewBox="0 0 200 70"><line x1="10" y1="35" x2="190" y2="35" stroke="#1e5b9c" stroke-width="2"/><circle cx="10" cy="35" r="3" fill="#c0392b"/><circle cx="190" cy="35" r="3" fill="#c0392b"/><text x="6" y="55" font-size="12" fill="#c0392b">A</text><text x="186" y="55" font-size="12" fill="#c0392b">B</text></svg>` },
+        'segment': { caption: 'Отрезок CD длиной a', svg: `<svg width="200" height="70" viewBox="0 0 200 70"><line x1="20" y1="35" x2="180" y2="35" stroke="#1e5b9c" stroke-width="2"/><circle cx="20" cy="35" r="3" fill="#c0392b"/><circle cx="180" cy="35" r="3" fill="#c0392b"/><text x="16" y="55" font-size="12" fill="#c0392b">C</text><text x="176" y="55" font-size="12" fill="#c0392b">D</text><text x="90" y="28" font-size="12" fill="#1e5b9c">a</text></svg>` },
+        'ray': { caption: 'Луч EF', svg: `<svg width="200" height="70" viewBox="0 0 200 70"><line x1="20" y1="35" x2="180" y2="35" stroke="#1e5b9c" stroke-width="2"/><circle cx="20" cy="35" r="3" fill="#c0392b"/><text x="16" y="55" font-size="12" fill="#c0392b">E</text><text x="176" y="55" font-size="12" fill="#c0392b">F</text><polygon points="180,35 172,30 172,40" fill="#1e5b9c"/></svg>` },
+        'polyline': { caption: 'Ломаная из трёх звеньев', svg: `<svg width="220" height="90" viewBox="0 0 220 90"><polyline points="20,70 80,20 140,60 200,25" fill="none" stroke="#1e5b9c" stroke-width="2"/><circle cx="20" cy="70" r="3" fill="#c0392b"/><circle cx="80" cy="20" r="3" fill="#c0392b"/><circle cx="140" cy="60" r="3" fill="#c0392b"/><circle cx="200" cy="25" r="3" fill="#c0392b"/></svg>` },
+        'circle': { caption: 'Окружность с радиусом R и диаметром D', svg: `<svg width="180" height="140" viewBox="0 0 180 140"><circle cx="90" cy="70" r="45" fill="none" stroke="#27ae60" stroke-width="2"/><circle cx="90" cy="70" r="3" fill="#1e5b9c"/><line x1="90" y1="70" x2="135" y2="70" stroke="#c0392b" stroke-width="2"/><line x1="45" y1="70" x2="135" y2="70" stroke="#8e44ad" stroke-width="1.5" stroke-dasharray="4,3"/><text x="110" y="64" font-size="11" fill="#c0392b">R</text><text x="88" y="58" font-size="11" fill="#8e44ad">O</text><text x="140" y="64" font-size="11" fill="#1e3a5f">D</text></svg>` },
+        'angle': { caption: 'Угол ∠ABC', svg: `<svg width="180" height="120" viewBox="0 0 180 120"><line x1="30" y1="95" x2="150" y2="95" stroke="#1e5b9c" stroke-width="2"/><line x1="30" y1="95" x2="110" y2="20" stroke="#1e5b9c" stroke-width="2"/><path d="M 55 95 A 25 25 0 0 0 50 75" fill="none" stroke="#c0392b" stroke-width="1.5"/><text x="58" y="85" font-size="11" fill="#c0392b">∠</text><text x="20" y="112" font-size="12" fill="#c0392b">B</text><text x="146" y="112" font-size="12" fill="#c0392b">C</text><text x="112" y="18" font-size="12" fill="#c0392b">A</text></svg>` },
+        'angle_types': { caption: 'Прямой (90°), острый (<90°), тупой (>90°)', svg: `<svg width="300" height="110" viewBox="0 0 300 110">
                 <line x1="10" y1="90" x2="80" y2="90" stroke="#1e5b9c" stroke-width="2"/><line x1="10" y1="90" x2="10" y2="20" stroke="#1e5b9c" stroke-width="2"/><rect x="10" y="82" width="8" height="8" fill="none" stroke="#c0392b"/><text x="20" y="105" font-size="10" fill="#1e3a5f">90°</text>
                 <line x1="110" y1="90" x2="180" y2="90" stroke="#1e5b9c" stroke-width="2"/><line x1="110" y1="90" x2="160" y2="40" stroke="#1e5b9c" stroke-width="2"/><path d="M 130 90 A 20 20 0 0 0 125 75" fill="none" stroke="#c0392b"/><text x="120" y="105" font-size="10" fill="#1e3a5f">&lt;90°</text>
                 <line x1="210" y1="90" x2="280" y2="90" stroke="#1e5b9c" stroke-width="2"/><line x1="210" y1="90" x2="250" y2="20" stroke="#1e5b9c" stroke-width="2"/><path d="M 230 90 A 20 20 0 0 0 235 70" fill="none" stroke="#c0392b"/><text x="220" y="105" font-size="10" fill="#1e3a5f">&gt;90°</text>
-            </svg>`
-        },
-        'angle_measure': {
-            caption: 'Измерение угла транспортиром',
-            svg: `<svg width="220" height="140" viewBox="0 0 220 140"><line x1="20" y1="110" x2="200" y2="110" stroke="#1e5b9c" stroke-width="2"/><line x1="20" y1="110" x2="160" y2="30" stroke="#1e5b9c" stroke-width="2"/><path d="M 20 110 A 90 90 0 0 1 110 20" fill="none" stroke="#27ae60" stroke-width="1.5"/><text x="30" y="100" font-size="10" fill="#c0392b">60°</text><text x="150" y="20" font-size="10" fill="#5e6f8d">транспортир</text></svg>`
-        },
-        // --- Многоугольники ---
-        'rectangle': {
-            caption: 'Прямоугольник со сторонами a и b',
-            svg: `<svg width="200" height="130" viewBox="0 0 200 130"><rect x="20" y="20" width="150" height="90" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="95" y="15" font-size="12" fill="#1e3a5f" text-anchor="middle">a</text><text x="180" y="70" font-size="12" fill="#1e3a5f">b</text><text x="95" y="122" font-size="11" fill="#c0392b" text-anchor="middle">P = 2(a+b), S = a·b</text></svg>`
-        },
-        'square': {
-            caption: 'Квадрат со стороной a',
-            svg: `<svg width="160" height="130" viewBox="0 0 160 130"><rect x="35" y="20" width="90" height="90" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="80" y="15" font-size="12" fill="#1e3a5f" text-anchor="middle">a</text><text x="130" y="70" font-size="12" fill="#1e3a5f">a</text><text x="80" y="122" font-size="11" fill="#c0392b" text-anchor="middle">P = 4a, S = a²</text></svg>`
-        },
-        'triangle': {
-            caption: 'Треугольник',
-            svg: `<svg width="200" height="130" viewBox="0 0 200 130"><polygon points="20,110 180,110 180,20" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="100" y="122" font-size="11" fill="#1e3a5f" text-anchor="middle">треугольник</text></svg>`
-        },
-        'composite_figure': {
-            caption: 'Составная фигура из двух прямоугольников',
-            svg: `<svg width="220" height="130" viewBox="0 0 220 130"><rect x="20" y="50" width="90" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><rect x="110" y="20" width="90" height="90" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="2"/><text x="110" y="122" font-size="11" fill="#1e3a5f" text-anchor="middle">S = S₁ + S₂</text></svg>`
-        },
-        'perimeter': {
-            caption: 'Периметр многоугольника — сумма длин сторон',
-            svg: `<svg width="200" height="130" viewBox="0 0 200 130"><polygon points="20,110 180,110 180,20" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="100" y="75" font-size="11" fill="#c0392b" text-anchor="middle">P = a+b+c</text></svg>`
-        },
-        'rectangle_sides': {
-            caption: 'Прямоугольник с заданными сторонами',
-            svg: `<svg width="220" height="140" viewBox="0 0 220 140"><rect x="20" y="25" width="160" height="90" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="100" y="18" font-size="12" fill="#1e3a5f" text-anchor="middle">a</text><text x="195" y="75" font-size="12" fill="#1e3a5f">b</text><text x="100" y="132" font-size="11" fill="#c0392b" text-anchor="middle">Постройте по заданным сторонам</text></svg>`
-        },
-        // --- Тела ---
-        'cube': {
-            caption: 'Куб с ребром a',
-            svg: `<svg width="200" height="160" viewBox="0 0 200 160">
-                <polygon points="40,60 120,60 150,35 70,35" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="40,60 70,35 70,105 40,130" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="70,35 150,35 150,105 70,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="40,130 70,105 150,105 120,130" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/>
-                <text x="95" y="150" font-size="12" fill="#1e3a5f" text-anchor="middle">V = a³</text>
-                <text x="30" y="55" font-size="11" fill="#c0392b">a</text>
-            </svg>`
-        },
-        'parallelepiped': {
-            caption: 'Прямоугольный параллелепипед',
-            svg: `<svg width="220" height="160" viewBox="0 0 220 160">
-                <polygon points="40,60 130,60 170,35 80,35" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="40,60 80,35 80,105 40,130" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="80,35 170,35 170,105 80,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="40,130 80,105 170,105 130,130" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/>
-                <text x="110" y="150" font-size="12" fill="#1e3a5f" text-anchor="middle">V = a·b·c</text>
-            </svg>`
-        },
-        'unfold': {
-            caption: 'Развёртка куба (6 квадратов)',
-            svg: `<svg width="240" height="160" viewBox="0 0 240 160">
-                <polygon points="40,30 90,30 90,80 40,80" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="90,30 140,30 140,80 90,80" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="140,30 190,30 190,80 140,80" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="90,80 140,80 140,130 90,130" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="140,80 190,80 190,130 140,130" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="40,80 90,80 90,130 40,130" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
-                <text x="120" y="150" font-size="11" fill="#1e3a5f" text-anchor="middle">развёртка</text>
-            </svg>`
-        },
-        'volume': {
-            caption: 'Объём куба и параллелепипеда',
-            svg: `<svg width="260" height="160" viewBox="0 0 260 160">
-                <polygon points="20,60 70,60 90,45 40,45" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="20,60 40,45 40,105 20,120" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="40,45 90,45 90,105 40,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="20,120 40,105 90,105 70,120" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/>
-                <text x="55" y="140" font-size="11" fill="#1e3a5f" text-anchor="middle">куб: V = a³</text>
-
-                <polygon points="140,60 200,60 230,45 170,45" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="140,60 170,45 170,105 140,120" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="170,45 230,45 230,105 170,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
-                <polygon points="140,120 170,105 230,105 200,120" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/>
-                <text x="185" y="140" font-size="11" fill="#1e3a5f" text-anchor="middle">параллелепипед: V = a·b·c</text>
-            </svg>`
-        },
-        // --- Дроби ---
-        'fraction_parts': {
-            caption: 'Доли: закрашено 3 из 4 частей → 3/4',
-            svg: `<svg width="220" height="120" viewBox="0 0 220 120"><rect x="20" y="30" width="180" height="60" fill="none" stroke="#1e5b9c" stroke-width="2"/><rect x="20" y="30" width="45" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1"/><rect x="65" y="30" width="45" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1"/><rect x="110" y="30" width="45" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1"/><rect x="155" y="30" width="45" height="60" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1"/><text x="110" y="108" font-size="12" fill="#1e3a5f" text-anchor="middle">3/4</text></svg>`
-        },
-        'fraction_circle': {
-            caption: 'Дробь на круге: закрашено 2 из 6 частей → 2/6',
-            svg: `<svg width="140" height="140" viewBox="0 0 140 140"><circle cx="70" cy="70" r="50" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="2"/><path d="M 70 70 L 70 20 A 50 50 0 0 1 120 70 Z" fill="#e6f0fc" stroke="#1e5b9c"/><path d="M 70 70 L 120 70 A 50 50 0 0 1 95 113 Z" fill="#e6f0fc" stroke="#1e5b9c"/><circle cx="70" cy="70" r="3" fill="#c0392b"/><text x="70" y="135" font-size="12" fill="#1e3a5f" text-anchor="middle">2/6</text></svg>`
-        },
-        // --- Координатная прямая ---
-        'coord_line': {
-            caption: 'Координатная прямая: отмечены точки 0, 1, 3, 5',
-            svg: `<svg width="300" height="80" viewBox="0 0 300 80"><line x1="10" y1="45" x2="290" y2="45" stroke="#1e5b9c" stroke-width="2"/><polygon points="290,45 282,41 282,49" fill="#1e5b9c"/><circle cx="30" cy="45" r="3" fill="#c0392b"/><circle cx="90" cy="45" r="3" fill="#c0392b"/><circle cx="150" cy="45" r="3" fill="#c0392b"/><circle cx="210" cy="45" r="3" fill="#c0392b"/><text x="26" y="65" font-size="11" fill="#c0392b">0</text><text x="86" y="65" font-size="11" fill="#c0392b">1</text><text x="146" y="65" font-size="11" fill="#c0392b">3</text><text x="206" y="65" font-size="11" fill="#c0392b">5</text></svg>`
-        },
-        // --- Десятичные дроби ---
-        'decimal_place': {
-            caption: 'Разряды десятичной дроби: 3,45',
-            svg: `<svg width="260" height="80" viewBox="0 0 260 80"><text x="40" y="50" font-size="28" fill="#1e5b9c">3</text><text x="70" y="50" font-size="28" fill="#c0392b">,</text><text x="95" y="50" font-size="28" fill="#1e5b9c">4</text><text x="125" y="50" font-size="28" fill="#1e5b9c">5</text><text x="40" y="75" font-size="11" fill="#5e6f8d">целые</text><text x="95" y="75" font-size="11" fill="#5e6f8d">десятые</text><text x="135" y="75" font-size="11" fill="#5e6f8d">сотые</text></svg>`
-        }
+            </svg>` },
+        'angle_measure': { caption: 'Измерение угла транспортиром', svg: `<svg width="220" height="140" viewBox="0 0 220 140"><line x1="20" y1="110" x2="200" y2="110" stroke="#1e5b9c" stroke-width="2"/><line x1="20" y1="110" x2="160" y2="30" stroke="#1e5b9c" stroke-width="2"/><path d="M 20 110 A 90 90 0 0 1 110 20" fill="none" stroke="#27ae60" stroke-width="1.5"/><text x="30" y="100" font-size="10" fill="#c0392b">60°</text><text x="150" y="20" font-size="10" fill="#5e6f8d">транспортир</text></svg>` },
+        'rectangle': { caption: 'Прямоугольник со сторонами a и b', svg: `<svg width="200" height="130" viewBox="0 0 200 130"><rect x="20" y="20" width="150" height="90" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="95" y="15" font-size="12" fill="#1e3a5f" text-anchor="middle">a</text><text x="180" y="70" font-size="12" fill="#1e3a5f">b</text><text x="95" y="122" font-size="11" fill="#c0392b" text-anchor="middle">P = 2(a+b), S = a·b</text></svg>` },
+        'square': { caption: 'Квадрат со стороной a', svg: `<svg width="160" height="130" viewBox="0 0 160 130"><rect x="35" y="20" width="90" height="90" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="80" y="15" font-size="12" fill="#1e3a5f" text-anchor="middle">a</text><text x="130" y="70" font-size="12" fill="#1e3a5f">a</text><text x="80" y="122" font-size="11" fill="#c0392b" text-anchor="middle">P = 4a, S = a²</text></svg>` },
+        'triangle': { caption: 'Треугольник', svg: `<svg width="200" height="130" viewBox="0 0 200 130"><polygon points="20,110 180,110 180,20" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="100" y="122" font-size="11" fill="#1e3a5f" text-anchor="middle">треугольник</text></svg>` },
+        'composite_figure': { caption: 'Составная фигура из двух прямоугольников', svg: `<svg width="220" height="130" viewBox="0 0 220 130"><rect x="20" y="50" width="90" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><rect x="110" y="20" width="90" height="90" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="2"/><text x="110" y="122" font-size="11" fill="#1e3a5f" text-anchor="middle">S = S₁ + S₂</text></svg>` },
+        'perimeter': { caption: 'Периметр многоугольника — сумма длин сторон', svg: `<svg width="200" height="130" viewBox="0 0 200 130"><polygon points="20,110 180,110 180,20" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="100" y="75" font-size="11" fill="#c0392b" text-anchor="middle">P = a+b+c</text></svg>` },
+        'rectangle_sides': { caption: 'Прямоугольник с заданными сторонами', svg: `<svg width="220" height="140" viewBox="0 0 220 140"><rect x="20" y="25" width="160" height="90" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/><text x="100" y="18" font-size="12" fill="#1e3a5f" text-anchor="middle">a</text><text x="195" y="75" font-size="12" fill="#1e3a5f">b</text><text x="100" y="132" font-size="11" fill="#c0392b" text-anchor="middle">Постройте по заданным сторонам</text></svg>` },
+        'cube': { caption: 'Куб с ребром a', svg: `<svg width="200" height="160" viewBox="0 0 200 160"><polygon points="40,60 120,60 150,35 70,35" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="40,60 70,35 70,105 40,130" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="70,35 150,35 150,105 70,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="40,130 70,105 150,105 120,130" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/><text x="95" y="150" font-size="12" fill="#1e3a5f" text-anchor="middle">V = a³</text><text x="30" y="55" font-size="11" fill="#c0392b">a</text></svg>` },
+        'parallelepiped': { caption: 'Прямоугольный параллелепипед', svg: `<svg width="220" height="160" viewBox="0 0 220 160"><polygon points="40,60 130,60 170,35 80,35" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="40,60 80,35 80,105 40,130" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="80,35 170,35 170,105 80,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="40,130 80,105 170,105 130,130" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/><text x="110" y="150" font-size="12" fill="#1e3a5f" text-anchor="middle">V = a·b·c</text></svg>` },
+        'unfold': { caption: 'Развёртка куба (6 квадратов)', svg: `<svg width="240" height="160" viewBox="0 0 240 160"><polygon points="40,30 90,30 90,80 40,80" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="90,30 140,30 140,80 90,80" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="140,30 190,30 190,80 140,80" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="90,80 140,80 140,130 90,130" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="140,80 190,80 190,130 140,130" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="40,80 90,80 90,130 40,130" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/><text x="120" y="150" font-size="11" fill="#1e3a5f" text-anchor="middle">развёртка</text></svg>` },
+        'volume': { caption: 'Объём куба и параллелепипеда', svg: `<svg width="260" height="160" viewBox="0 0 260 160"><polygon points="20,60 70,60 90,45 40,45" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="20,60 40,45 40,105 20,120" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="40,45 90,45 90,105 40,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="20,120 40,105 90,105 70,120" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/><text x="55" y="140" font-size="11" fill="#1e3a5f" text-anchor="middle">куб: V = a³</text><polygon points="140,60 200,60 230,45 170,45" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="140,60 170,45 170,105 140,120" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="170,45 230,45 230,105 170,105" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/><polygon points="140,120 170,105 230,105 200,120" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/><text x="185" y="140" font-size="11" fill="#1e3a5f" text-anchor="middle">параллелепипед: V = a·b·c</text></svg>` },
+        'fraction_parts': { caption: 'Доли: закрашено 3 из 4 частей → 3/4', svg: `<svg width="220" height="120" viewBox="0 0 220 120"><rect x="20" y="30" width="180" height="60" fill="none" stroke="#1e5b9c" stroke-width="2"/><rect x="20" y="30" width="45" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1"/><rect x="65" y="30" width="45" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1"/><rect x="110" y="30" width="45" height="60" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1"/><rect x="155" y="30" width="45" height="60" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1"/><text x="110" y="108" font-size="12" fill="#1e3a5f" text-anchor="middle">3/4</text></svg>` },
+        'fraction_circle': { caption: 'Дробь на круге: закрашено 2 из 6 частей → 2/6', svg: `<svg width="140" height="140" viewBox="0 0 140 140"><circle cx="70" cy="70" r="50" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="2"/><path d="M 70 70 L 70 20 A 50 50 0 0 1 120 70 Z" fill="#e6f0fc" stroke="#1e5b9c"/><path d="M 70 70 L 120 70 A 50 50 0 0 1 95 113 Z" fill="#e6f0fc" stroke="#1e5b9c"/><circle cx="70" cy="70" r="3" fill="#c0392b"/><text x="70" y="135" font-size="12" fill="#1e3a5f" text-anchor="middle">2/6</text></svg>` },
+        'coord_line': { caption: 'Координатная прямая: отмечены точки 0, 1, 3, 5', svg: `<svg width="300" height="80" viewBox="0 0 300 80"><line x1="10" y1="45" x2="290" y2="45" stroke="#1e5b9c" stroke-width="2"/><polygon points="290,45 282,41 282,49" fill="#1e5b9c"/><circle cx="30" cy="45" r="3" fill="#c0392b"/><circle cx="90" cy="45" r="3" fill="#c0392b"/><circle cx="150" cy="45" r="3" fill="#c0392b"/><circle cx="210" cy="45" r="3" fill="#c0392b"/><text x="26" y="65" font-size="11" fill="#c0392b">0</text><text x="86" y="65" font-size="11" fill="#c0392b">1</text><text x="146" y="65" font-size="11" fill="#c0392b">3</text><text x="206" y="65" font-size="11" fill="#c0392b">5</text></svg>` },
+        'decimal_place': { caption: 'Разряды десятичной дроби: 3,45', svg: `<svg width="260" height="80" viewBox="0 0 260 80"><text x="40" y="50" font-size="28" fill="#1e5b9c">3</text><text x="70" y="50" font-size="28" fill="#c0392b">,</text><text x="95" y="50" font-size="28" fill="#1e5b9c">4</text><text x="125" y="50" font-size="28" fill="#1e5b9c">5</text><text x="40" y="75" font-size="11" fill="#5e6f8d">целые</text><text x="95" y="75" font-size="11" fill="#5e6f8d">десятые</text><text x="135" y="75" font-size="11" fill="#5e6f8d">сотые</text></svg>` }
     };
 
-    // Подбор рисунка по теме урока
     function pickDrawing(topic) {
         const t = topic.toLowerCase();
         if (t.includes('координатн')) return TOPIC_DRAWINGS['coord_line'];
@@ -509,17 +402,11 @@
     function makeTaskSet(items) {
         let out = '';
         out += 'УСЛОВИЯ ЗАДАНИЙ:\n';
-        items.forEach((it, i) => {
-            out += `\n${i+1}. ${it.q}\n`;
-        });
+        items.forEach((it, i) => { out += `\n${i+1}. ${it.q}\n`; });
         out += '\n\nРАЗБОР (решение):\n';
-        items.forEach((it, i) => {
-            out += `\n${i+1}. ${it.r}\n`;
-        });
+        items.forEach((it, i) => { out += `\n${i+1}. ${it.r}\n`; });
         out += '\n\nОТВЕТЫ:\n';
-        items.forEach((it, i) => {
-            out += `${i+1}. ${it.a}\n`;
-        });
+        items.forEach((it, i) => { out += `${i+1}. ${it.a}\n`; });
         return out;
     }
 
@@ -784,7 +671,6 @@
         }).join('');
         lessonSelect.disabled = false;
 
-        // Рисунок строго по теме
         currentDrawing = pickDrawing(obj.topic);
         if (currentDrawing) {
             geoDrawings.innerHTML = `<div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;">${currentDrawing.svg}<div class="drawing-caption">${escapeHtml(currentDrawing.caption)}</div></div>`;
@@ -813,7 +699,6 @@
         const ready = READY[item.section] || READY['Повторение'];
         lessonPlanInput.value = ready.plan(item.topic, num);
 
-        // Пересчитываем рисунок по теме (на случай смены урока)
         currentDrawing = pickDrawing(item.topic);
         if (currentDrawing) {
             geoDrawings.innerHTML = `<div style="display:flex; align-items:flex-start; gap:14px; flex-wrap:wrap;">${currentDrawing.svg}<div class="drawing-caption">${escapeHtml(currentDrawing.caption)}</div></div>`;
@@ -876,10 +761,10 @@
                     ? `<div class="drawing-inline">${currentDrawing.svg}<div><div class="drawing-caption">${escapeHtml(currentDrawing.caption)}</div></div></div>`
                     : '';
 
-                tasksHtml = `<div class="task-block"><h4>Условия заданий</h4>${drawingBlock}<pre style="white-space:pre-wrap; margin:0;">${escapeHtml(conditions)}</pre></div>`;
-                tasksHtml += `<div class="task-block"><h4>Разбор (решение)</h4>${drawingBlock}<pre style="white-space:pre-wrap; margin:0;">${escapeHtml(razbor)}</pre></div>`;
+                tasksHtml = `<div class="task-block"><h4>Условия заданий (для учеников)</h4>${drawingBlock}<pre style="white-space:pre-wrap; margin:0;">${escapeHtml(conditions)}</pre></div>`;
+                tasksHtml += `<div class="answers-block ${showAnswersInPreview ? 'show' : ''}"><h4>🔎 Разбор (решение) — для учителя</h4>${drawingBlock}<pre style="white-space:pre-wrap; margin:0;">${escapeHtml(razbor)}</pre></div>`;
                 if (answers) {
-                    tasksHtml += `<div class="answers-block ${showAnswersInPreview ? 'show' : ''}"><h4>Ответы</h4><pre style="white-space:pre-wrap; margin:0;">${escapeHtml(answers)}</pre></div>`;
+                    tasksHtml += `<div class="answers-block ${showAnswersInPreview ? 'show' : ''}"><h4>✅ Ответы — для учителя</h4><pre style="white-space:pre-wrap; margin:0;">${escapeHtml(answers)}</pre></div>`;
                 }
             } else {
                 tasksHtml = `<div class="task-block"><pre style="white-space:pre-wrap; margin:0;">${escapeHtml(tasks)}</pre></div>`;
@@ -903,7 +788,7 @@
             </table>
             <h2 style="color:#1e5b9c; margin-top:28px;">📖 Конспект урока</h2>
             <div style="background:#f2f8ff; padding:14px 18px; border-radius:14px; white-space:pre-wrap;">${escapeHtml(plan)}</div>
-            <h2 style="color:#1e5b9c;">📝 Задания с рисунком, разбором и ответами</h2>
+            <h2 style="color:#1e5b9c;">📝 Задания</h2>
             ${tasksHtml}
             <h2 style="color:#1e5b9c;">🏠 Домашнее задание</h2>
             <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(hw)}</p>
@@ -921,14 +806,14 @@
 
     toggleAnswersBtn.addEventListener('click', function() {
         showAnswersInPreview = !showAnswersInPreview;
-        toggleAnswersBtn.textContent = showAnswersInPreview ? '🙈 Скрыть ответы в предпросмотре' : '👁 Показать ответы в предпросмотре';
+        toggleAnswersBtn.textContent = showAnswersInPreview ? '🙈 Скрыть разбор и ответы' : '👁 Показать разбор и ответы (для учителя)';
         updatePreview();
     });
 
     /* ============================================================
-       PDF: задания + рисунок + разбор + ответы
+       PDF
        ============================================================ */
-    document.getElementById('pdfBtn').addEventListener('click', async function() {
+    async function generatePdf({ forTeacher }) {
         const topic = topicInput.value.trim();
         const num = lessonSelect.value;
         if (!topic || !num) { showToast('Выберите тему и номер урока'); return; }
@@ -937,14 +822,12 @@
         showToast('Формируем PDF…');
 
         try {
-            const ready = READY[currentSection] || READY['Повторение'];
             const tasksText = tasksInput.value.trim();
             const hw = homeworkInput.value.trim();
             const grade = gradeInput.value.trim() || '5';
             const date = dateInput.value ? new Date(dateInput.value).toLocaleDateString('ru-RU') : '—';
             const teacher = teacherInput.value.trim() || '—';
 
-            // Разбираем задания на условия / разбор / ответы
             let conditionsText = tasksText, razborText = '', answersText = '';
             const parts = tasksText.split('\n\nРАЗБОР (решение):\n');
             if (parts.length === 2) {
@@ -962,10 +845,26 @@
                    </div>`
                 : '';
 
+            const headerTitle = forTeacher
+                ? `Задания для учителя (с разбором и ответами). Урок №${escapeHtml(num)}`
+                : `Задания для учеников. Урок №${escapeHtml(num)}`;
+
+            const teacherBlocks = forTeacher ? `
+                ${razborText ? `
+                <h2 style="color:#1e5b9c; font-size:16px; margin:16px 0 8px;">🔎 Разбор (решение)</h2>
+                ${drawingHtml}
+                <div style="background:#f2f8ff; padding:12px 16px; border-radius:12px; white-space:pre-wrap; font-size:13px; line-height:1.5;">${escapeHtml(razborText)}</div>
+                ` : ''}
+                ${answersText ? `
+                <h2 style="color:#6c3483; font-size:16px; margin:16px 0 8px;">✅ Ответы</h2>
+                <div style="background:#f4ecf7; padding:12px 16px; border-radius:12px; white-space:pre-wrap; font-size:13px; line-height:1.5;">${escapeHtml(answersText)}</div>
+                ` : ''}
+            ` : '';
+
             const pdfInner = `
                 <div style="font-family:'Segoe UI',Roboto,sans-serif; padding:20px 24px; color:#1d2b3a; background:#fff;">
-                    <div style="border-bottom:3px solid #1e5b9c; padding-bottom:10px; margin-bottom:14px;">
-                        <h1 style="color:#155799; margin:0 0 6px; font-size:22px;">Задания с разбором и ответами. Урок №${escapeHtml(num)}</h1>
+                    <div style="border-bottom:3px solid ${forTeacher ? '#c0392b' : '#2980b9'}; padding-bottom:10px; margin-bottom:14px;">
+                        <h1 style="color:${forTeacher ? '#c0392b' : '#2980b9'}; margin:0 0 6px; font-size:20px;">${headerTitle}</h1>
                         <p style="margin:0; font-size:13px; color:#4a5b6e;">
                             Тема: <strong>${escapeHtml(topic)}</strong><br>
                             Класс: ${escapeHtml(grade)} • Дата: ${escapeHtml(date)} • Учитель: ${escapeHtml(teacher)}
@@ -976,21 +875,15 @@
                     ${drawingHtml}
                     <div style="background:#f2f8ff; padding:12px 16px; border-radius:12px; white-space:pre-wrap; font-size:13px; line-height:1.5;">${escapeHtml(conditionsText)}</div>
 
-                    ${razborText ? `
-                    <h2 style="color:#1e5b9c; font-size:16px; margin:16px 0 8px;">🔎 Разбор (решение)</h2>
-                    ${drawingHtml}
-                    <div style="background:#f2f8ff; padding:12px 16px; border-radius:12px; white-space:pre-wrap; font-size:13px; line-height:1.5;">${escapeHtml(razborText)}</div>
-                    ` : ''}
-
-                    ${answersText ? `
-                    <h2 style="color:#6c3483; font-size:16px; margin:16px 0 8px;">✅ Ответы</h2>
-                    <div style="background:#f4ecf7; padding:12px 16px; border-radius:12px; white-space:pre-wrap; font-size:13px; line-height:1.5;">${escapeHtml(answersText)}</div>
-                    ` : ''}
+                    ${teacherBlocks}
 
                     <h2 style="color:#1e5b9c; font-size:16px; margin:16px 0 8px;">🏠 Домашнее задание</h2>
                     <div style="background:#f2f8ff; padding:12px 16px; border-radius:12px; font-size:13px;">${escapeHtml(hw || '—')}</div>
 
-                    <p style="margin-top:24px; font-size:11px; color:#7b8fa8; text-align:center;">Сгенерировано в конструкторе урока (КТП 5 класс)</p>
+                    <p style="margin-top:24px; font-size:11px; color:#7b8fa8; text-align:center;">
+                        ${forTeacher ? 'Вариант для учителя — с разбором и ответами.' : 'Вариант для учеников — только задания.'}
+                        Сгенерировано в конструкторе урока (КТП 5 класс)
+                    </p>
                 </div>
             `;
 
@@ -1035,16 +928,20 @@
             }
 
             const safe = topic.replace(/[^а-яА-ЯёЁa-zA-Z0-9]/g, '_').substring(0, 30);
-            pdf.save(`задания_урок_${num}_${safe}.pdf`);
+            const prefix = forTeacher ? 'задания_учитель' : 'задания_ученик';
+            pdf.save(`${prefix}_урок_${num}_${safe}.pdf`);
 
-            pdfStatus.textContent = 'PDF готов: задания_урок_' + num + '_' + safe + '.pdf';
+            pdfStatus.textContent = `PDF готов: ${prefix}_урок_${num}_${safe}.pdf`;
             showToast('PDF сохранён');
         } catch (err) {
             console.error(err);
             pdfStatus.textContent = 'Ошибка формирования PDF: ' + err.message;
             showToast('Ошибка PDF');
         }
-    });
+    }
+
+    document.getElementById('pdfStudentBtn').addEventListener('click', function() { generatePdf({ forTeacher: false }); });
+    document.getElementById('pdfTeacherBtn').addEventListener('click', function() { generatePdf({ forTeacher: true }); });
 
     /* ============================================================
        СКАЧАТЬ HTML
@@ -1092,7 +989,7 @@
         sectionBadge.style.display = 'none'; acList.classList.remove('show');
         geoPreview.classList.remove('show'); geoDrawings.innerHTML = '';
         currentSection = null; currentDrawing = null; showAnswersInPreview = false;
-        toggleAnswersBtn.textContent = '👁 Показать ответы в предпросмотре';
+        toggleAnswersBtn.textContent = '👁 Показать разбор и ответы (для учителя)';
         updatePreview(); showToast('Очищено');
     });
 
