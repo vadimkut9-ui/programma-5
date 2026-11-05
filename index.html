@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Конспект урока по теме из КТП — 5 класс</title>
+<title>Конспект урока + задания PDF (с рисунками) — 5 класс</title>
+
+<!-- Библиотеки для PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
     body { background: #f4f7fc; margin: 0; padding: 24px 16px; display: flex; justify-content: center; }
@@ -36,6 +41,8 @@
     .btn-primary:hover { background: #0f4273; }
     .btn-accent { background: #27ae60; border-color: #27ae60; color: white; }
     .btn-accent:hover { background: #1e8b4c; border-color: #1e8b4c; }
+    .btn-pdf { background: #c0392b; border-color: #c0392b; color: white; }
+    .btn-pdf:hover { background: #962d22; border-color: #962d22; }
     .badge { display: inline-block; background: #d9e9ff; color: #155799; font-size: 0.78rem; padding: 3px 10px; border-radius: 30px; margin-left: 6px; font-weight: 600; }
     .preview { margin-top: 28px; background: #f8fbfe; border-radius: 24px; padding: 22px 26px; border: 1px solid #d7e5f2; }
     .preview h2 { font-size: 1.3rem; margin-top: 0; margin-bottom: 14px; color: #155799; font-weight: 600; }
@@ -44,35 +51,30 @@
     .toast.show { opacity: 1; }
     .hint { font-size: 0.82rem; color: #5e6f8d; margin-top: 4px; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .geo-preview { margin-top: 12px; background: #fff; border: 1px solid #d7e5f2; border-radius: 14px; padding: 12px; display: none; }
+    .geo-preview.show { display: block; }
+    .geo-preview h4 { margin: 0 0 8px; color: #155799; font-size: 0.95rem; }
+    .geo-preview svg { max-width: 100%; height: auto; }
+    .pdf-status { font-size: 0.85rem; color: #5e6f8d; margin-top: 8px; text-align: right; }
     @media (max-width: 700px) { .app { padding: 20px 16px; } .grid-3 { grid-template-columns: 1fr; } h1 { font-size: 1.4rem; } }
 </style>
 </head>
 <body>
 <div class="app">
-    <h1>📘 Конспект урока + задания <small>база КТП, 5 класс</small></h1>
-    <div class="subhead">⚡ Введите тему из КТП — конспект и задания на уроке появятся автоматически.</div>
+    <h1>📘 Конспект + задания в PDF <small>с рисунками для геометрии</small></h1>
+    <div class="subhead">⚡ Выберите тему из КТП — конспект и задания появятся. Нажмите «Скачать задания в PDF» — получите файл с заданиями (и рисунками, если геометрия).</div>
 
-    <!-- Тема с автодополнением -->
     <div class="field">
         <label>Тема урока из КТП <span style="color:#c0392b;">*</span> <span class="badge" id="sectionBadge" style="display:none;"></span></label>
         <input type="text" id="topic" placeholder="Начните вводить: «Десятичная система», «Дроби», «Угол»..." autocomplete="off">
         <div class="autocomplete-list" id="acList"></div>
-        <div class="hint">Выберите тему из списка — конспект и задания заполнятся сами.</div>
+        <div class="hint">Выберите тему — конспект и задания заполнятся автоматически.</div>
     </div>
 
     <div class="grid-3">
-        <div class="field">
-            <label>Класс</label>
-            <input type="text" id="grade" value="5">
-        </div>
-        <div class="field">
-            <label>Дата</label>
-            <input type="date" id="date">
-        </div>
-        <div class="field">
-            <label>Учитель</label>
-            <input type="text" id="teacher" value="Светлакова Вера Андреевна">
-        </div>
+        <div class="field"><label>Класс</label><input type="text" id="grade" value="5"></div>
+        <div class="field"><label>Дата</label><input type="date" id="date"></div>
+        <div class="field"><label>Учитель</label><input type="text" id="teacher" value="Светлакова Вера Андреевна"></div>
     </div>
 
     <div class="field">
@@ -90,6 +92,12 @@
         <textarea id="tasks" rows="8" placeholder="Выберите тему — задания появятся здесь"></textarea>
     </div>
 
+    <!-- Превью геометрических рисунков -->
+    <div class="geo-preview" id="geoPreview">
+        <h4>📐 Рисунки для заданий (будут в PDF)</h4>
+        <div id="geoDrawings"></div>
+    </div>
+
     <div class="field">
         <label>🏠 Домашнее задание</label>
         <input type="text" id="homework" placeholder="Подставится из КТП">
@@ -104,10 +112,12 @@
 
     <div class="btn-group">
         <button class="btn" id="clearBtn" type="button">🗑 Очистить</button>
+        <button class="btn btn-pdf" id="pdfBtn" type="button">📄 Скачать задания в PDF</button>
         <button class="btn" id="saveHtmlBtn" type="button">💾 Скачать HTML</button>
         <button class="btn btn-accent" id="fillBtn" type="button">✨ Заполнить из КТП</button>
         <button class="btn btn-primary" id="updatePreviewBtn" type="button">🔄 Обновить</button>
     </div>
+    <div class="pdf-status" id="pdfStatus"></div>
 
     <div class="preview">
         <h2>📄 Предпросмотр конспекта</h2>
@@ -120,7 +130,7 @@
 <script>
 (function() {
     /* ============================================================
-       БАЗА КТП: тема + ДЗ + раздел
+       БАЗА КТП (тема + ДЗ + раздел)
        ============================================================ */
     const KTP = [
         {n:1,topic:'Десятичная система счисления. Ряд натуральных чисел',hw:'п.1, №1.8, 1.11',section:'Натуральные числа'},
@@ -297,267 +307,165 @@
 
     /* ============================================================
        ГОТОВЫЕ КОНСПЕКТЫ И ЗАДАНИЯ ПО РАЗДЕЛАМ
-       (подставляется тема и номера уроков)
        ============================================================ */
     const READY = {
         'Натуральные числа': {
-            goal: 'Сформировать и закрепить знания о натуральных числах и действиях с ними; отработать вычислительные навыки и умение решать текстовые задачи.',
-            know: 'Понятия натурального числа, разряда и класса; свойства арифметических действий; признаки делимости; порядок действий в числовых выражениях.',
-            can: 'Записывать, читать и сравнивать натуральные числа; выполнять арифметические действия; применять свойства действий для рационализации вычислений; решать текстовые задачи.',
-            plan: (topic, nums) => `Тема: «${topic}» (уроки №${nums}).
-
-1. Организационный момент (2 мин).
-   Приветствие, проверка готовности к уроку, запись даты и темы.
-
-2. Актуализация знаний (7 мин).
-   Устный счёт: примеры на сложение, вычитание, умножение и деление натуральных чисел.
-   Фронтальный опрос: что называют натуральным числом? какие разряды вы знаете? каков порядок действий в выражении?
-
-3. Изучение нового материала (15 мин).
-   Объяснение темы «${topic}» с опорой на учебник и наглядные примеры.
-   Разбор типовых заданий у доски:
-   — запись и чтение чисел;
-   — сравнение и округление;
-   — вычисления с использованием свойств действий.
-
-4. Первичное закрепление (12 мин).
-   Работа с учебником: выполнение номеров из КТП.
-   Самостоятельная работа по карточкам с последующей взаимопроверкой.
-
-5. Итог урока. Рефлексия (4 мин).
-   Вопросы: что нового узнали? что вызвало затруднение?
-   Запись домашнего задания и выставление отметок.`,
-            tasks: (topic, hw) => `Задания на уроке по теме «${topic}»:
-
-1. Устный счёт (5–7 примеров на все арифметические действия).
-2. Работа у доски: записать и прочитать числа, сравнить их, округлить до указанного разряда.
-3. Решение примеров на порядок действий (2–3 выражения).
-4. Решение текстовой задачи на движение или покупки.
-5. Самостоятельная работа по карточкам (10 мин).
-6. Дополнительно (для сильных): составить и решить своё выражение с несколькими действиями.
-
-Домашнее задание: ${hw || 'по КТП'}.`
+            plan: (t,n) => `Тема: «${t}» (уроки №${n}).\n\n1. Организационный момент (2 мин).\n2. Актуализация знаний: устный счёт (7 мин).\n3. Изучение нового материала по теме «${t}» (15 мин).\n4. Первичное закрепление: номера из КТП (12 мин).\n5. Итог урока, рефлексия (4 мин).`,
+            tasks: (t,hw) => `Задания на уроке по теме «${t}»:\n\n1. Устный счёт (5–7 примеров).\n2. Записать и прочитать числа, сравнить их.\n3. Решить примеры на порядок действий.\n4. Решить текстовую задачу.\n5. Самостоятельная работа по карточкам.\n\nДомашнее задание: ${hw||'по КТП'}.`,
+            geo: null
         },
         'Геометрия: линии': {
-            goal: 'Сформировать представление о геометрических фигурах на плоскости; научить чертить и измерять отрезки, углы, окружности.',
-            know: 'Понятия точки, прямой, отрезка, луча, ломаной, окружности, круга, угла; виды углов; единицы измерения длины и углов.',
-            can: 'Чертить геометрические фигуры; измерять длину отрезков и величину углов; строить окружности заданного радиуса и углы заданной величины.',
-            plan: (topic, nums) => `Тема: «${topic}» (уроки №${nums}).
-
-1. Организационный момент (2 мин).
-   Приветствие, проверка готовности: линейка, циркуль, карандаш, транспортир.
-
-2. Актуализация знаний (7 мин).
-   Повторение названий геометрических фигур, единиц измерения длины.
-   Фронтальный опрос: чем отличается прямая от отрезка? что такое радиус?
-
-3. Изучение нового материала (15 мин).
-   Объяснение темы «${topic}» с построениями на доске.
-   Демонстрация приёмов черчения и измерения.
-   Разбор типовых заданий.
-
-4. Практическая работа (12 мин).
-   Построение фигур в тетради по заданным размерам.
-   Измерение длин и углов, запись результатов.
-
-5. Итог урока. Рефлексия (4 мин).
-   Обсуждение: какие инструменты использовали? что было сложно?
-   Запись домашнего задания.`,
-            tasks: (topic, hw) => `Задания на уроке по теме «${topic}»:
-
-1. Начертить в тетради точку, прямую, отрезок, луч; обозначить их.
-2. Измерить длину заданных отрезков линейкой, записать результат в разных единицах.
-3. Построить окружность заданного радиуса циркулем, провести радиус и диаметр.
-4. Построить углы заданной величины с помощью транспортира; определить вид угла.
-5. Практическая работа по карточкам: построение фигуры по описанию.
-6. Дополнительно: составить узор из окружностей или углов.
-
-Домашнее задание: ${hw || 'по КТП'}.`
+            plan: (t,n) => `Тема: «${t}» (уроки №${n}).\n\n1. Организационный момент (2 мин).\n2. Актуализация знаний: названия геометрических фигур (7 мин).\n3. Изучение нового материала по теме «${t}» с построениями (15 мин).\n4. Практическая работа: черчение и измерение (12 мин).\n5. Итог урока, рефлексия (4 мин).`,
+            tasks: (t,hw) => `Задания на уроке по теме «${t}»:\n\n1. Начертить в тетради точку, прямую, отрезок, луч; обозначить.\n2. Измерить длину заданных отрезков линейкой.\n3. Построить окружность заданного радиуса циркулем.\n4. Построить углы заданной величины с помощью транспортира.\n5. Практическая работа по карточкам.\n\nДомашнее задание: ${hw||'по КТП'}.`,
+            geo: 'lines'
         },
         'Обыкновенные дроби': {
-            goal: 'Сформировать понятие обыкновенной дроби; научить сравнивать, складывать, вычитать, умножать и делить дроби; решать задачи на дроби.',
-            know: 'Понятие обыкновенной дроби; правильные и неправильные дроби; основное свойство дроби; смешанные числа; правила действий с дробями.',
-            can: 'Записывать и читать дроби; сравнивать дроби; выполнять сложение, вычитание, умножение и деление дробей; переводить смешанные числа в неправильные дроби и обратно; решать задачи на дроби.',
-            plan: (topic, nums) => `Тема: «${topic}» (уроки №${nums}).
-
-1. Организационный момент (2 мин).
-   Приветствие, запись темы, постановка учебной задачи.
-
-2. Актуализация знаний (7 мин).
-   Повторение: что такое доля? как записывается дробь? что показывает числитель и знаменатель?
-   Устные упражнения на чтение и запись дробей.
-
-3. Изучение нового материала (15 мин).
-   Объяснение темы «${topic}» с опорой на наглядность (круги, полоски).
-   Разбор правил и алгоритмов действий с дробями.
-   Примеры у доски.
-
-4. Первичное закрепление (12 мин).
-   Работа с учебником: номера из КТП.
-   Самостоятельная работа с последующей проверкой.
-
-5. Итог урока. Рефлексия (4 мин).
-   Что нового узнали? какие правила запомнили?
-   Запись домашнего задания.`,
-            tasks: (topic, hw) => `Задания на уроке по теме «${topic}»:
-
-1. Записать дроби по рисунку (закрашенная часть фигуры).
-2. Определить, какие дроби правильные, а какие — неправильные.
-3. Сравнить дроби с одинаковыми и разными знаменателями.
-4. Выполнить сложение и вычитание дробей (примеры у доски и самостоятельно).
-5. Решить текстовую задачу на нахождение части от числа.
-6. Дополнительно: составить и решить свои примеры с дробями.
-
-Домашнее задание: ${hw || 'по КТП'}.`
+            plan: (t,n) => `Тема: «${t}» (уроки №${n}).\n\n1. Организационный момент (2 мин).\n2. Актуализация знаний: доли, чтение дробей (7 мин).\n3. Изучение нового материала по теме «${t}» (15 мин).\n4. Первичное закрепление: номера из КТП (12 мин).\n5. Итог урока, рефлексия (4 мин).`,
+            tasks: (t,hw) => `Задания на уроке по теме «${t}»:\n\n1. Записать дроби по рисунку.\n2. Определить правильные и неправильные дроби.\n3. Сравнить дроби.\n4. Выполнить сложение и вычитание дробей.\n5. Решить текстовую задачу на части.\n\nДомашнее задание: ${hw||'по КТП'}.`,
+            geo: null
         },
         'Геометрия: многоугольники': {
-            goal: 'Сформировать представление о многоугольниках; научить вычислять периметр и площадь прямоугольника и многоугольников, составленных из прямоугольников.',
-            know: 'Понятия многоугольника, прямоугольника, квадрата, треугольника; формулы периметра и площади; единицы измерения площади.',
-            can: 'Строить многоугольники; вычислять периметр и площадь; решать практические задачи на нахождение площади и периметра.',
-            plan: (topic, nums) => `Тема: «${topic}» (уроки №${nums}).
-
-1. Организационный момент (2 мин).
-   Приветствие, проверка готовности: линейка, карандаш.
-
-2. Актуализация знаний (7 мин).
-   Повторение: какие фигуры называются многоугольниками? что такое периметр? в каких единицах измеряется площадь?
-
-3. Изучение нового материала (15 мин).
-   Объяснение темы «${topic}» с построениями на доске.
-   Вывод формул периметра и площади прямоугольника и квадрата.
-   Разбор типовых задач.
-
-4. Практическая работа (12 мин).
-   Построение прямоугольника с заданными сторонами.
-   Вычисление периметра и площади.
-   Решение задач на разбиение фигуры на прямоугольники.
-
-5. Итог урока. Рефлексия (4 мин).
-   Какие формулы запомнили? где в жизни пригодится умение находить площадь?
-   Запись домашнего задания.`,
-            tasks: (topic, hw) => `Задания на уроке по теме «${topic}»:
-
-1. Начертить прямоугольник и квадрат с заданными сторонами.
-2. Вычислить периметр и площадь каждой фигуры.
-3. Найти площадь многоугольника, составленного из нескольких прямоугольников.
-4. Решить практическую задачу (например, сколько краски нужно на покраску стены).
-5. Работа по карточкам: найти периметр и площадь по рисунку.
-6. Дополнительно: составить свою задачу на нахождение площади.
-
-Домашнее задание: ${hw || 'по КТП'}.`
+            plan: (t,n) => `Тема: «${t}» (уроки №${n}).\n\n1. Организационный момент (2 мин).\n2. Актуализация знаний: виды многоугольников (7 мин).\n3. Изучение нового материала по теме «${t}» (15 мин).\n4. Практическая работа: построение и вычисления (12 мин).\n5. Итог урока, рефлексия (4 мин).`,
+            tasks: (t,hw) => `Задания на уроке по теме «${t}»:\n\n1. Начертить прямоугольник и квадрат с заданными сторонами.\n2. Вычислить периметр и площадь каждой фигуры.\n3. Найти площадь многоугольника из прямоугольников (см. рисунок).\n4. Решить практическую задачу.\n5. Работа по карточкам.\n\nДомашнее задание: ${hw||'по КТП'}.`,
+            geo: 'polygons'
         },
         'Десятичные дроби': {
-            goal: 'Сформировать понятие десятичной дроби; научить сравнивать, складывать, вычитать, умножать и делить десятичные дроби; округлять их.',
-            know: 'Понятие десятичной дроби; правила сравнения, сложения, вычитания, умножения и деления десятичных дробей; правило округления.',
-            can: 'Записывать и читать десятичные дроби; сравнивать их; выполнять арифметические действия; округлять дроби; решать текстовые задачи.',
-            plan: (topic, nums) => `Тема: «${topic}» (уроки №${nums}).
-
-1. Организационный момент (2 мин).
-   Приветствие, запись темы, постановка учебной задачи.
-
-2. Актуализация знаний (7 мин).
-   Повторение: как записываются обыкновенные дроби со знаменателем 10, 100, 1000?
-   Устные упражнения на чтение и запись десятичных дробей.
-
-3. Изучение нового материала (15 мин).
-   Объяснение темы «${topic}» с опорой на разряды.
-   Разбор правил и алгоритмов действий с десятичными дробями.
-   Примеры у доски.
-
-4. Первичное закрепление (12 мин).
-   Работа с учебником: номера из КТП.
-   Самостоятельная работа с последующей проверкой.
-
-5. Итог урока. Рефлексия (4 мин).
-   Что нового узнали? какие правила запомнили?
-   Запись домашнего задания.`,
-            tasks: (topic, hw) => `Задания на уроке по теме «${topic}»:
-
-1. Записать десятичные дроби по разрядам, прочитать их.
-2. Сравнить десятичные дроби.
-3. Выполнить сложение и вычитание десятичных дробей (примеры у доски и самостоятельно).
-4. Выполнить умножение и деление десятичных дробей.
-5. Округлить дроби до указанного разряда.
-6. Решить текстовую задачу с десятичными дробями.
-7. Дополнительно: составить свои примеры на действия с десятичными дробями.
-
-Домашнее задание: ${hw || 'по КТП'}.`
+            plan: (t,n) => `Тема: «${t}» (уроки №${n}).\n\n1. Организационный момент (2 мин).\n2. Актуализация знаний: разряды, чтение дробей (7 мин).\n3. Изучение нового материала по теме «${t}» (15 мин).\n4. Первичное закрепление: номера из КТП (12 мин).\n5. Итог урока, рефлексия (4 мин).`,
+            tasks: (t,hw) => `Задания на уроке по теме «${t}»:\n\n1. Записать десятичные дроби по разрядам.\n2. Сравнить дроби.\n3. Выполнить сложение и вычитание.\n4. Выполнить умножение и деление.\n5. Округлить до указанного разряда.\n6. Решить текстовую задачу.\n\nДомашнее задание: ${hw||'по КТП'}.`,
+            geo: null
         },
         'Геометрия: тела': {
-            goal: 'Сформировать представление о пространственных телах; научить изображать многогранники, строить развёртки, вычислять объём куба и параллелепипеда.',
-            know: 'Понятия многогранника, прямоугольного параллелепипеда, куба; формулу объёма; понятие развёртки.',
-            can: 'Изображать многогранники; строить развёртки куба и параллелепипеда; вычислять объём куба и прямоугольного параллелепипеда; решать практические задачи.',
-            plan: (topic, nums) => `Тема: «${topic}» (уроки №${nums}).
-
-1. Организационный момент (2 мин).
-   Приветствие, проверка готовности: линейка, карандаш, модели фигур.
-
-2. Актуализация знаний (7 мин).
-   Повторение: какие фигуры называются объёмными? что такое развёртка?
-   Демонстрация моделей многогранников.
-
-3. Изучение нового материала (15 мин).
-   Объяснение темы «${topic}» с демонстрацией моделей и развёрток.
-   Вывод формулы объёма куба и параллелепипеда.
-   Разбор типовых задач.
-
-4. Практическая работа (12 мин).
-   Построение развёртки куба (параллелепипеда) на бумаге.
-   Изготовление макета.
-   Вычисление объёма по заданным размерам.
-
-5. Итог урока. Рефлексия (4 мин).
-   Где в жизни встречаются объёмные фигуры? зачем нужно уметь находить объём?
-   Запись домашнего задания.`,
-            tasks: (topic, hw) => `Задания на уроке по теме «${topic}»:
-
-1. Рассмотреть модели многогранников, назвать их элементы (грани, рёбра, вершины).
-2. Начертить развёртку куба с заданным ребром, вырезать и склеить макет.
-3. Вычислить объём куба и прямоугольного параллелепипеда по заданным размерам.
-4. Решить практическую задачу (например, сколько воды помещается в аквариум).
-5. Работа по карточкам: найти объём по рисунку.
-6. Дополнительно: придумать свою задачу на нахождение объёма.
-
-Домашнее задание: ${hw || 'по КТП'}.`
+            plan: (t,n) => `Тема: «${t}» (уроки №${n}).\n\n1. Организационный момент (2 мин).\n2. Актуализация знаний: объёмные фигуры (7 мин).\n3. Изучение нового материала по теме «${t}» (15 мин).\n4. Практическая работа: развёртки и объём (12 мин).\n5. Итог урока, рефлексия (4 мин).`,
+            tasks: (t,hw) => `Задания на уроке по теме «${t}»:\n\n1. Рассмотреть модель параллелепипеда, назвать элементы.\n2. Начертить развёртку куба, склеить макет.\n3. Вычислить объём куба и параллелепипеда (см. рисунок).\n4. Решить практическую задачу.\n5. Работа по карточкам.\n\nДомашнее задание: ${hw||'по КТП'}.`,
+            geo: 'solids'
         },
         'Повторение': {
-            goal: 'Обобщить и систематизировать знания и умения за курс математики 5 класса; подготовить учащихся к итоговой контрольной работе / ВПР.',
-            know: 'Основные понятия и методы курса математики 5 класса: натуральные числа и действия с ними, дроби обыкновенные и десятичные, геометрические фигуры и величины.',
-            can: 'Применять полученные знания при решении задач, в том числе формата ВПР; выполнять вычисления; решать текстовые и геометрические задачи.',
-            plan: (topic, nums) => `Тема: «${topic}» (уроки №${nums}).
-
-1. Организационный момент (2 мин).
-   Приветствие, постановка цели: повторить и обобщить изученное.
-
-2. Актуализация знаний (10 мин).
-   Фронтальный опрос по основным темам курса.
-   Устный счёт.
-
-3. Повторение и обобщение (20 мин).
-   Решение типовых заданий ВПР / итоговой работы.
-   Разбор трудных случаев.
-   Работа у доски и в тетрадях.
-
-4. Самостоятельная работа (8 мин).
-   Выполнение заданий по карточкам.
-
-5. Итог урока. Рефлексия (5 мин).
-   Что повторили? что осталось непонятным?
-   Запись домашнего задания.`,
-            tasks: (topic, hw) => `Задания на уроке по теме «${topic}»:
-
-1. Устный счёт (примеры на все действия).
-2. Решение заданий в формате ВПР (2–3 номера).
-3. Решение текстовой задачи на движение или покупки.
-4. Геометрическая задача на нахождение площади или объёма.
-5. Работа по карточкам с последующей самопроверкой.
-6. Дополнительно: решить задание повышенной сложности.
-
-Домашнее задание: ${hw || 'по КТП'}.`
+            plan: (t,n) => `Тема: «${t}» (уроки №${n}).\n\n1. Организационный момент (2 мин).\n2. Актуализация знаний: опрос по темам курса (10 мин).\n3. Повторение и обобщение: решение заданий ВПР (20 мин).\n4. Самостоятельная работа (8 мин).\n5. Итог урока, рефлексия (5 мин).`,
+            tasks: (t,hw) => `Задания на уроке по теме «${t}»:\n\n1. Устный счёт.\n2. Решение заданий в формате ВПР.\n3. Текстовая задача.\n4. Геометрическая задача.\n5. Работа по карточкам.\n\nДомашнее задание: ${hw||'по КТП'}.`,
+            geo: null
         }
     };
 
-    // Уникальные темы для автодополнения
+    /* ============================================================
+       SVG-РИСУНКИ ДЛЯ PDF (по типам)
+       ============================================================ */
+    const DRAWINGS = {
+        lines: `
+            <div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:10px;">
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:170px; text-align:center;">
+                    <svg width="150" height="90" viewBox="0 0 150 90">
+                        <line x1="10" y1="45" x2="140" y2="45" stroke="#1e5b9c" stroke-width="2"/>
+                        <circle cx="10" cy="45" r="3" fill="#c0392b"/>
+                        <circle cx="140" cy="45" r="3" fill="#c0392b"/>
+                        <text x="75" y="35" font-size="11" fill="#1e3a5f" text-anchor="middle">прямая AB</text>
+                        <text x="8" y="65" font-size="11" fill="#c0392b">A</text>
+                        <text x="136" y="65" font-size="11" fill="#c0392b">B</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:170px; text-align:center;">
+                    <svg width="150" height="90" viewBox="0 0 150 90">
+                        <line x1="20" y1="45" x2="130" y2="45" stroke="#1e5b9c" stroke-width="2"/>
+                        <circle cx="20" cy="45" r="3" fill="#c0392b"/>
+                        <circle cx="130" cy="45" r="3" fill="#c0392b"/>
+                        <text x="75" y="35" font-size="11" fill="#1e3a5f" text-anchor="middle">отрезок CD</text>
+                        <text x="18" y="65" font-size="11" fill="#c0392b">C</text>
+                        <text x="126" y="65" font-size="11" fill="#c0392b">D</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:170px; text-align:center;">
+                    <svg width="150" height="90" viewBox="0 0 150 90">
+                        <line x1="20" y1="45" x2="130" y2="45" stroke="#1e5b9c" stroke-width="2"/>
+                        <circle cx="20" cy="45" r="3" fill="#c0392b"/>
+                        <text x="75" y="35" font-size="11" fill="#1e3a5f" text-anchor="middle">луч EF</text>
+                        <text x="18" y="65" font-size="11" fill="#c0392b">E</text>
+                        <text x="126" y="65" font-size="11" fill="#c0392b">F</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:170px; text-align:center;">
+                    <svg width="150" height="90" viewBox="0 0 150 90">
+                        <circle cx="75" cy="45" r="30" fill="none" stroke="#27ae60" stroke-width="2"/>
+                        <circle cx="75" cy="45" r="3" fill="#1e5b9c"/>
+                        <line x1="75" y1="45" x2="105" y2="45" stroke="#c0392b" stroke-width="1.5"/>
+                        <text x="75" y="30" font-size="11" fill="#1e3a5f" text-anchor="middle">окружность</text>
+                        <text x="108" y="42" font-size="10" fill="#c0392b">R</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:170px; text-align:center;">
+                    <svg width="150" height="90" viewBox="0 0 150 90">
+                        <line x1="30" y1="70" x2="120" y2="70" stroke="#1e5b9c" stroke-width="2"/>
+                        <line x1="30" y1="70" x2="90" y2="20" stroke="#1e5b9c" stroke-width="2"/>
+                        <path d="M 50 70 A 20 20 0 0 0 45 55" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+                        <text x="55" y="60" font-size="10" fill="#c0392b">∠</text>
+                        <text x="75" y="80" font-size="11" fill="#1e3a5f" text-anchor="middle">угол</text>
+                    </svg>
+                </div>
+            </div>`,
+        polygons: `
+            <div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:10px;">
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:190px; text-align:center;">
+                    <svg width="170" height="110" viewBox="0 0 170 110">
+                        <rect x="20" y="20" width="120" height="70" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/>
+                        <text x="80" y="15" font-size="11" fill="#1e3a5f" text-anchor="middle">прямоугольник</text>
+                        <text x="80" y="105" font-size="10" fill="#c0392b" text-anchor="middle">P = 2(a+b), S = a·b</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:160px; text-align:center;">
+                    <svg width="140" height="110" viewBox="0 0 140 110">
+                        <rect x="35" y="25" width="70" height="70" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/>
+                        <text x="70" y="18" font-size="11" fill="#1e3a5f" text-anchor="middle">квадрат</text>
+                        <text x="70" y="105" font-size="10" fill="#c0392b" text-anchor="middle">P = 4a, S = a²</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:200px; text-align:center;">
+                    <svg width="180" height="110" viewBox="0 0 180 110">
+                        <polygon points="15,90 165,90 165,20" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/>
+                        <text x="90" y="105" font-size="11" fill="#1e3a5f" text-anchor="middle">треугольник</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:200px; text-align:center;">
+                    <svg width="180" height="110" viewBox="0 0 180 110">
+                        <rect x="15" y="40" width="60" height="50" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="2"/>
+                        <rect x="75" y="10" width="60" height="80" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="2"/>
+                        <text x="90" y="105" font-size="11" fill="#1e3a5f" text-anchor="middle">составная фигура</text>
+                    </svg>
+                </div>
+            </div>`,
+        solids: `
+            <div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:10px;">
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:190px; text-align:center;">
+                    <svg width="170" height="130" viewBox="0 0 170 130">
+                        <polygon points="30,40 100,40 140,20 70,20" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="30,40 70,20 70,90 30,110" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="70,20 140,20 140,90 70,90" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="30,110 70,90 140,90 100,110" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <text x="85" y="125" font-size="11" fill="#1e3a5f" text-anchor="middle">параллелепипед</text>
+                        <text x="85" y="15" font-size="10" fill="#c0392b" text-anchor="middle">V = a·b·c</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:170px; text-align:center;">
+                    <svg width="150" height="130" viewBox="0 0 150 130">
+                        <polygon points="30,40 100,40 130,20 60,20" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="30,40 60,20 60,90 30,110" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="60,20 130,20 130,90 60,90" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="30,110 60,90 130,90 100,110" fill="#eef4fa" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <text x="75" y="125" font-size="11" fill="#1e3a5f" text-anchor="middle">куб</text>
+                        <text x="75" y="15" font-size="10" fill="#c0392b" text-anchor="middle">V = a³</text>
+                    </svg>
+                </div>
+                <div style="background:#fff; border:1px solid #cfddee; border-radius:10px; padding:8px; width:200px; text-align:center;">
+                    <svg width="180" height="130" viewBox="0 0 180 130">
+                        <polygon points="30,40 90,40 90,100 30,100" fill="#f2f8ff" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="90,40 120,25 120,85 90,100" fill="#e6f0fc" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <polygon points="30,40 60,25 120,25 90,40" fill="#d9e9ff" stroke="#1e5b9c" stroke-width="1.5"/>
+                        <text x="90" y="120" font-size="11" fill="#1e3a5f" text-anchor="middle">развёртка куба</text>
+                    </svg>
+                </div>
+            </div>`
+    };
+
+    /* ============================================================
+       УНИКАЛЬНЫЕ ТЕМЫ
+       ============================================================ */
     const uniqueTopics = [];
     const seen = new Set();
     KTP.forEach(item => {
@@ -585,8 +493,12 @@
     const fileNameDisplay = document.getElementById('fileNameDisplay');
     const previewContent = document.getElementById('previewContent');
     const toastEl = document.getElementById('toast');
+    const geoPreview = document.getElementById('geoPreview');
+    const geoDrawings = document.getElementById('geoDrawings');
+    const pdfStatus = document.getElementById('pdfStatus');
 
     let attachedFileData = null;
+    let currentSection = null;
 
     function escapeHtml(t) {
         if (!t) return '';
@@ -643,33 +555,36 @@
     });
 
     /* ============================================================
-       ВЫБОР ТЕМЫ → ГОТОВЫЙ КОНСПЕКТ + ЗАДАНИЯ
+       ВЫБОР ТЕМЫ
        ============================================================ */
     function selectTopic(obj) {
         if (!obj) return;
         topicInput.value = obj.topic;
         acList.classList.remove('show');
+        currentSection = obj.section;
 
         lessonNumInput.value = obj.nums.join(', ');
-
         sectionBadge.style.display = 'inline-block';
         sectionBadge.textContent = obj.section;
-
         homeworkInput.value = obj.hw || '—';
 
         const ready = READY[obj.section] || READY['Повторение'];
-        const numsStr = obj.nums.join(', ');
-
-        lessonPlanInput.value = ready.plan(obj.topic, numsStr);
+        lessonPlanInput.value = ready.plan(obj.topic, obj.nums.join(', '));
         tasksInput.value = ready.tasks(obj.topic, obj.hw);
 
+        // Показать рисунки, если геометрия
+        if (ready.geo && DRAWINGS[ready.geo]) {
+            geoDrawings.innerHTML = DRAWINGS[ready.geo];
+            geoPreview.classList.add('show');
+        } else {
+            geoPreview.classList.remove('show');
+            geoDrawings.innerHTML = '';
+        }
+
         updatePreview();
-        showToast('Конспект и задания по теме готовы');
+        showToast('Тема выбрана — конспект и задания готовы');
     }
 
-    /* ============================================================
-       КНОПКА «ЗАПОЛНИТЬ ИЗ КТП»
-       ============================================================ */
     document.getElementById('fillBtn').addEventListener('click', function() {
         const q = topicInput.value.trim().toLowerCase();
         if (!q) { showToast('Введите или выберите тему'); return; }
@@ -723,16 +638,12 @@
                 <tr><td style="padding:10px 16px; font-weight:600;">Учитель:</td><td style="padding:10px 16px;">${escapeHtml(teacher)}</td></tr>
                 ${nums ? `<tr><td style="padding:10px 16px; font-weight:600;">№ урока в КТП:</td><td style="padding:10px 16px;">${escapeHtml(nums)}</td></tr>` : ''}
             </table>
-
             <h2 style="color:#1e5b9c; margin-top:28px;">📖 Конспект урока</h2>
             <div style="background:#f2f8ff; padding:14px 18px; border-radius:14px; white-space:pre-wrap;">${escapeHtml(plan)}</div>
-
             <h2 style="color:#1e5b9c;">📝 Задания на уроке</h2>
             <div style="background:#f2f8ff; padding:14px 18px; border-radius:14px; white-space:pre-wrap;">${escapeHtml(tasks)}</div>
-
             <h2 style="color:#1e5b9c;">🏠 Домашнее задание</h2>
             <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(hw)}</p>
-
             ${fileHtml}
             <hr style="margin:28px 0 12px; border:0; border-top:1px solid #d7e5f2;">
             <p style="color:#7b8fa8; font-size:0.85rem;">Конспект сгенерирован в конструкторе урока по базе КТП (5 класс)</p>
@@ -746,7 +657,112 @@
     });
 
     /* ============================================================
-       СКАЧАТЬ HTML
+       PDF: задания + рисунки
+       ============================================================ */
+    document.getElementById('pdfBtn').addEventListener('click', async function() {
+        const topic = topicInput.value.trim();
+        if (!topic) { showToast('Сначала выберите тему'); return; }
+
+        pdfStatus.textContent = 'Формируем PDF…';
+        showToast('Формируем PDF…');
+
+        try {
+            // 1) Собираем HTML для PDF (задания + рисунки)
+            const ready = READY[currentSection] || READY['Повторение'];
+            const tasksText = tasksInput.value.trim();
+            const hw = homeworkInput.value.trim();
+            const grade = gradeInput.value.trim() || '5';
+            const date = dateInput.value ? new Date(dateInput.value).toLocaleDateString('ru-RU') : '—';
+            const teacher = teacherInput.value.trim() || '—';
+            const nums = lessonNumInput.value.trim();
+
+            let drawingHtml = '';
+            if (ready.geo && DRAWINGS[ready.geo]) {
+                drawingHtml = `<div style="margin:18px 0; padding:14px; background:#f9fcff; border:1px solid #d7e5f2; border-radius:14px;">
+                    <h3 style="color:#155799; margin:0 0 10px; font-size:16px;">📐 Рисунки к заданиям</h3>
+                    ${DRAWINGS[ready.geo]}
+                </div>`;
+            }
+
+            const pdfInner = `
+                <div style="font-family:'Segoe UI',Roboto,sans-serif; padding:20px 24px; color:#1d2b3a; background:#fff;">
+                    <div style="border-bottom:3px solid #1e5b9c; padding-bottom:10px; margin-bottom:14px;">
+                        <h1 style="color:#155799; margin:0 0 6px; font-size:22px;">Задания к уроку</h1>
+                        <p style="margin:0; font-size:13px; color:#4a5b6e;">
+                            Тема: <strong>${escapeHtml(topic)}</strong><br>
+                            Класс: ${escapeHtml(grade)} • Дата: ${escapeHtml(date)} • Учитель: ${escapeHtml(teacher)}${nums ? ' • № урока: '+escapeHtml(nums) : ''}
+                        </p>
+                    </div>
+
+                    <h2 style="color:#1e5b9c; font-size:16px; margin:16px 0 8px;">📝 Задания на уроке</h2>
+                    <div style="background:#f2f8ff; padding:12px 16px; border-radius:12px; white-space:pre-wrap; font-size:13px; line-height:1.5;">${escapeHtml(tasksText)}</div>
+
+                    ${drawingHtml}
+
+                    <h2 style="color:#1e5b9c; font-size:16px; margin:16px 0 8px;">🏠 Домашнее задание</h2>
+                    <div style="background:#f2f8ff; padding:12px 16px; border-radius:12px; font-size:13px;">${escapeHtml(hw || '—')}</div>
+
+                    <p style="margin-top:24px; font-size:11px; color:#7b8fa8; text-align:center;">Сгенерировано в конструкторе урока (КТП 5 класс)</p>
+                </div>
+            `;
+
+            // 2) Создаём временный контейнер и рендерим
+            const container = document.createElement('div');
+            container.style.position = 'fixed';
+            container.style.left = '-9999px';
+            container.style.top = '0';
+            container.style.width = '800px';
+            container.style.background = '#ffffff';
+            container.innerHTML = pdfInner;
+            document.body.appendChild(container);
+
+            // 3) html2canvas → картинка
+            const canvas = await html2canvas(container, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                useCORS: true,
+                logging: false
+            });
+            document.body.removeChild(container);
+
+            // 4) jsPDF: вставляем картинку постранично
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageW = pdf.internal.pageSize.getWidth();
+            const pageH = pdf.internal.pageSize.getHeight();
+            const margin = 10;
+            const imgW = pageW - margin * 2;
+
+            const imgData = canvas.toDataURL('image/png');
+            const imgH = (canvas.height * imgW) / canvas.width;
+
+            let heightLeft = imgH;
+            let position = margin;
+
+            pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
+            heightLeft -= (pageH - margin * 2);
+
+            while (heightLeft > 0) {
+                position = heightLeft - imgH + margin;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', margin, position, imgW, imgH);
+                heightLeft -= (pageH - margin * 2);
+            }
+
+            const safe = topic.replace(/[^а-яА-ЯёЁa-zA-Z0-9]/g, '_').substring(0, 40);
+            pdf.save(`задания_${safe}.pdf`);
+
+            pdfStatus.textContent = 'PDF готов: задания_' + safe + '.pdf';
+            showToast('PDF сохранён');
+        } catch (err) {
+            console.error(err);
+            pdfStatus.textContent = 'Ошибка формирования PDF: ' + err.message;
+            showToast('Ошибка PDF');
+        }
+    });
+
+    /* ============================================================
+       СКАЧАТЬ HTML (конспект)
        ============================================================ */
     document.getElementById('saveHtmlBtn').addEventListener('click', function() {
         const topic = topicInput.value.trim() || 'конспект_урока';
@@ -775,7 +791,7 @@
         a.href = url; a.download = `конспект_${safe}.html`;
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('Файл сохранён');
+        showToast('HTML сохранён');
     });
 
     /* ============================================================
@@ -786,6 +802,8 @@
         lessonNumInput.value = ''; lessonPlanInput.value = ''; tasksInput.value = ''; homeworkInput.value = '';
         taskFileInput.value = ''; attachedFileData = null; fileNameDisplay.innerHTML = '<i>файл не выбран</i>';
         sectionBadge.style.display = 'none'; acList.classList.remove('show');
+        geoPreview.classList.remove('show'); geoDrawings.innerHTML = '';
+        currentSection = null;
         updatePreview(); showToast('Очищено');
     });
 
