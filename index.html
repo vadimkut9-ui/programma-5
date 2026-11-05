@@ -1,659 +1,737 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конспект урока — конструктор</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-        }
-        body {
-            background: #f4f7fc;
-            margin: 0;
-            padding: 24px 16px;
-            display: flex;
-            justify-content: center;
-        }
-        .app {
-            max-width: 1100px;
-            width: 100%;
-            background: white;
-            border-radius: 32px;
-            box-shadow: 0 12px 30px rgba(0, 20, 30, 0.1);
-            padding: 28px 32px 32px;
-        }
-        h1 {
-            font-size: 1.9rem;
-            font-weight: 600;
-            margin-top: 0;
-            margin-bottom: 8px;
-            color: #1e2b3c;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        h1 small {
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: #5e6f8d;
-            margin-left: auto;
-        }
-        .subhead {
-            color: #4a5b6e;
-            margin-bottom: 28px;
-            border-left: 4px solid #3b7fbd;
-            padding-left: 16px;
-            font-size: 1rem;
-            background: #eef4fa;
-            border-radius: 0 12px 12px 0;
-            padding: 12px 18px;
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .field {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #1e3a5f;
-            margin-bottom: 6px;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        label .req {
-            color: #c0392b;
-            font-size: 1.1rem;
-        }
-        input, textarea, select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid #cfddee;
-            border-radius: 16px;
-            font-size: 1rem;
-            background: #fbfdff;
-            transition: 0.2s;
-            outline: none;
-            resize: vertical;
-            color: #1d2b3a;
-        }
-        input:focus, textarea:focus, select:focus {
-            border-color: #3b7fbd;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(59, 127, 189, 0.12);
-        }
-        textarea {
-            min-height: 100px;
-            line-height: 1.5;
-        }
-        .file-area {
-            background: #f0f6fe;
-            border-radius: 18px;
-            padding: 18px 20px;
-            border: 1.5px dashed #a0c0e0;
-            margin: 18px 0 6px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 18px;
-        }
-        .file-area label {
-            margin: 0;
-            font-weight: 500;
-            color: #155799;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            padding: 10px 18px;
-            border-radius: 40px;
-            border: 1px solid #c2d6ec;
-            transition: 0.2s;
-        }
-        .file-area label:hover {
-            background: #e1efff;
-            border-color: #3b7fbd;
-        }
-        .file-area input[type="file"] {
-            display: none;
-        }
-        .file-name {
-            font-size: 0.95rem;
-            color: #2d4e6e;
-            word-break: break-word;
-            flex: 1;
-            min-width: 180px;
-        }
-        .file-name i {
-            font-style: normal;
-            background: #d9e9ff;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            display: inline-block;
-        }
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            justify-content: flex-end;
-            margin-top: 32px;
-            border-top: 1px solid #dfe9f3;
-            padding-top: 24px;
-        }
-        .btn {
-            border: none;
-            padding: 12px 28px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            background: white;
-            color: #1e3a5f;
-            border: 1.5px solid #c2d6ec;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary {
-            background: #1e5b9c;
-            border-color: #1e5b9c;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #0f4273;
-            border-color: #0f4273;
-        }
-        .btn:hover {
-            background: #e6f0fc;
-        }
-        .btn-primary:hover {
-            background: #0f4273;
-        }
-        .btn-secondary {
-            background: #eef4fa;
-            border-color: #b8cde4;
-        }
-        .preview {
-            margin-top: 32px;
-            background: #f8fbfe;
-            border-radius: 24px;
-            padding: 24px 28px;
-            border: 1px solid #d7e5f2;
-        }
-        .preview h2 {
-            font-size: 1.4rem;
-            margin-top: 0;
-            margin-bottom: 16px;
-            color: #155799;
-            font-weight: 600;
-        }
-        .preview-content {
-            white-space: pre-wrap;
-            word-break: break-word;
-            line-height: 1.6;
-            background: white;
-            padding: 18px 22px;
-            border-radius: 18px;
-            border: 1px solid #e4eef8;
-            min-height: 120px;
-        }
-        .preview-content strong {
-            color: #0b2f52;
-        }
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #1e2b3c;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 60px;
-            font-weight: 500;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-            opacity: 0;
-            transition: 0.25s;
-            pointer-events: none;
-            z-index: 999;
-        }
-        .toast.show {
-            opacity: 1;
-        }
-        .badge {
-            background: #d9e9ff;
-            color: #155799;
-            font-size: 0.8rem;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-weight: 500;
-        }
-        @media (max-width: 700px) {
-            .app { padding: 20px 16px; }
-            .grid-2 { grid-template-columns: 1fr; gap: 0; }
-            h1 { font-size: 1.5rem; flex-wrap: wrap; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Конспект урока — конструктор (с базой КТП)</title>
+<style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
+    body { background: #f4f7fc; margin: 0; padding: 24px 16px; display: flex; justify-content: center; }
+    .app { max-width: 1100px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 12px 30px rgba(0,20,30,0.1); padding: 28px 32px 32px; }
+    h1 { font-size: 1.9rem; font-weight: 600; margin-top: 0; margin-bottom: 8px; color: #1e2b3c; display: flex; align-items: center; gap: 10px; }
+    h1 small { font-size: 0.9rem; font-weight: 400; color: #5e6f8d; margin-left: auto; }
+    .subhead { color: #4a5b6e; margin-bottom: 28px; border-left: 4px solid #3b7fbd; padding: 12px 18px; font-size: 1rem; background: #eef4fa; border-radius: 0 12px 12px 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .field { margin-bottom: 18px; position: relative; }
+    label { display: block; font-weight: 600; font-size: 0.9rem; color: #1e3a5f; margin-bottom: 6px; letter-spacing: 0.3px; display: flex; align-items: center; gap: 6px; }
+    label .req { color: #c0392b; font-size: 1.1rem; }
+    input, textarea, select { width: 100%; padding: 12px 14px; border: 1.5px solid #cfddee; border-radius: 16px; font-size: 1rem; background: #fbfdff; transition: 0.2s; outline: none; resize: vertical; color: #1d2b3a; }
+    input:focus, textarea:focus, select:focus { border-color: #3b7fbd; background: white; box-shadow: 0 0 0 4px rgba(59,127,189,0.12); }
+    textarea { min-height: 90px; line-height: 1.5; }
+    .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1.5px solid #3b7fbd; border-radius: 0 0 16px 16px; max-height: 260px; overflow-y: auto; z-index: 50; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .autocomplete-list.show { display: block; }
+    .autocomplete-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #eef4fa; font-size: 0.92rem; }
+    .autocomplete-item:hover, .autocomplete-item.active { background: #e6f0fc; }
+    .autocomplete-item .num { color: #3b7fbd; font-weight: 700; margin-right: 6px; }
+    .autocomplete-item .hw { color: #7b8fa8; font-size: 0.8rem; display: block; margin-top: 2px; }
+    .file-area { background: #f0f6fe; border-radius: 18px; padding: 18px 20px; border: 1.5px dashed #a0c0e0; margin: 18px 0 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+    .file-area label { margin: 0; font-weight: 500; color: #155799; cursor: pointer; display: flex; align-items: center; gap: 8px; background: white; padding: 10px 18px; border-radius: 40px; border: 1px solid #c2d6ec; transition: 0.2s; }
+    .file-area label:hover { background: #e1efff; border-color: #3b7fbd; }
+    .file-area input[type="file"] { display: none; }
+    .file-name { font-size: 0.95rem; color: #2d4e6e; word-break: break-word; flex: 1; min-width: 180px; }
+    .file-name i { font-style: normal; background: #d9e9ff; padding: 4px 12px; border-radius: 30px; font-size: 0.85rem; display: inline-block; }
+    .btn-group { display: flex; flex-wrap: wrap; gap: 14px; justify-content: flex-end; margin-top: 32px; border-top: 1px solid #dfe9f3; padding-top: 24px; }
+    .btn { border: none; padding: 12px 28px; border-radius: 60px; font-weight: 600; font-size: 0.95rem; cursor: pointer; background: white; color: #1e3a5f; border: 1.5px solid #c2d6ec; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: #1e5b9c; border-color: #1e5b9c; color: white; }
+    .btn-primary:hover { background: #0f4273; border-color: #0f4273; }
+    .btn:hover { background: #e6f0fc; }
+    .btn-primary:hover { background: #0f4273; }
+    .btn-accent { background: #27ae60; border-color: #27ae60; color: white; }
+    .btn-accent:hover { background: #1e8b4c; border-color: #1e8b4c; }
+    .preview { margin-top: 32px; background: #f8fbfe; border-radius: 24px; padding: 24px 28px; border: 1px solid #d7e5f2; }
+    .preview h2 { font-size: 1.4rem; margin-top: 0; margin-bottom: 16px; color: #155799; font-weight: 600; }
+    .preview-content { white-space: pre-wrap; word-break: break-word; line-height: 1.6; background: white; padding: 18px 22px; border-radius: 18px; border: 1px solid #e4eef8; min-height: 120px; }
+    .preview-content strong { color: #0b2f52; }
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1e2b3c; color: white; padding: 12px 24px; border-radius: 60px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2); opacity: 0; transition: 0.25s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; }
+    .hint { font-size: 0.82rem; color: #5e6f8d; margin-top: 4px; }
+    .section-tag { display: inline-block; background: #d9e9ff; color: #155799; font-size: 0.78rem; padding: 3px 10px; border-radius: 30px; margin-left: 6px; font-weight: 600; }
+    @media (max-width: 700px) { .app { padding: 20px 16px; } .grid-2 { grid-template-columns: 1fr; gap: 0; } h1 { font-size: 1.5rem; flex-wrap: wrap; } }
+</style>
 </head>
 <body>
 <div class="app">
-    <h1>
-        📘 Конспект урока
-        <small>заполните все поля</small>
-    </h1>
+    <h1>📘 Конспект урока <small>с базой КТП (5 класс)</small></h1>
     <div class="subhead">
-        ⚡ Тема, класс, цели и ход урока вводятся с клавиатуры. Можно прикрепить файл с заданием.
+        ⚡ Начните вводить тему — выберите её из списка КТП. Конспект и домашнее задание подставятся автоматически.
     </div>
 
-    <!-- Форма -->
-    <div class="grid-2">
-        <div class="field">
-            <label>Тема урока <span class="req">*</span></label>
-            <input type="text" id="topic" placeholder="Например: Десятичная система счисления" value="Десятичная система счисления. Ряд натуральных чисел">
-        </div>
-        <div class="field">
-            <label>Класс <span class="req">*</span></label>
-            <input type="text" id="grade" placeholder="5" value="5">
-        </div>
+    <!-- Тема с автодополнением -->
+    <div class="field">
+        <label>Тема урока <span class="req">*</span> <span class="section-tag" id="sectionTag" style="display:none;"></span></label>
+        <input type="text" id="topic" placeholder="Начните вводить тему, например: «Десятичная система»" autocomplete="off">
+        <div class="autocomplete-list" id="acList"></div>
+        <div class="hint">Выберите тему из КТП — номер урока, раздел и домашнее задание заполнятся сами.</div>
     </div>
 
     <div class="grid-2">
+        <div class="field">
+            <label>Класс</label>
+            <input type="text" id="grade" value="5">
+        </div>
         <div class="field">
             <label>Дата</label>
             <input type="date" id="date">
         </div>
+    </div>
+
+    <div class="grid-2">
         <div class="field">
             <label>Учитель</label>
-            <input type="text" id="teacher" placeholder="ФИО" value="Светлакова Вера Андреевна">
+            <input type="text" id="teacher" value="Светлакова Вера Андреевна">
+        </div>
+        <div class="field">
+            <label>Номер урока (из КТП)</label>
+            <input type="text" id="lessonNum" placeholder="например, 1" readonly style="background:#f0f6fe;">
         </div>
     </div>
 
     <div class="field">
         <label>Цель урока</label>
-        <textarea id="goal" rows="2" placeholder="Сформировать представление о ...">Познакомить с десятичной системой счисления; научить записывать и читать натуральные числа.</textarea>
+        <textarea id="goal" rows="2" placeholder="Заполнится автоматически из шаблона"></textarea>
     </div>
 
     <div class="field">
         <label>Знать / понимать</label>
-        <textarea id="know" rows="2" placeholder="Что должны знать...">Понятие натурального числа, разряды, классы; десятичная запись числа.</textarea>
+        <textarea id="know" rows="2" placeholder="Заполнится автоматически из шаблона"></textarea>
     </div>
 
     <div class="field">
         <label>Уметь</label>
-        <textarea id="can" rows="2" placeholder="Что должны уметь...">Записывать натуральные числа, определять разрядный состав, сравнивать числа.</textarea>
+        <textarea id="can" rows="2" placeholder="Заполнится автоматически из шаблона"></textarea>
     </div>
 
     <div class="field">
-        <label>Ход урока (ввод с клавиатуры)</label>
-        <textarea id="lessonPlan" rows="6" placeholder="1. Организационный момент...&#10;2. Актуализация знаний...&#10;3. Изучение нового материала...&#10;4. Первичное закрепление...&#10;5. Итог урока...">1. Организационный момент (2 мин).
-2. Актуализация знаний: устный счёт (5 мин).
-3. Изучение нового материала: десятичная система счисления, разряды (15 мин).
-4. Первичное закрепление: работа с учебником, №1.8, 1.11 (15 мин).
-5. Итог урока, рефлексия (3 мин).</textarea>
+        <label>Ход урока</label>
+        <textarea id="lessonPlan" rows="6" placeholder="Заполнится шаблоном, можно отредактировать"></textarea>
     </div>
 
     <div class="field">
-        <label>Домашнее задание</label>
-        <textarea id="homework" rows="2" placeholder="п.1, №1.8, 1.11">п.1, №1.8, 1.11; индивидуальная карточка.</textarea>
+        <label>🏠 Домашнее задание (из КТП)</label>
+        <textarea id="homework" rows="2" placeholder="Подставится из КТП"></textarea>
     </div>
 
-    <!-- Файл с заданием -->
+    <div class="field">
+        <label>📝 Задания к уроку (текст)</label>
+        <textarea id="tasks" rows="3" placeholder="Здесь можно описать задания. Если прикрепите файл — он появится в конспекте."></textarea>
+    </div>
+
     <div class="file-area">
-        <label for="taskFile">
-            📎 Прикрепить файл с заданием
+        <label for="taskFile">📎 Прикрепить файл с заданием
             <input type="file" id="taskFile" accept=".pdf,.doc,.docx,.txt,.jpg,.png,.xls,.xlsx">
         </label>
-        <div class="file-name" id="fileNameDisplay">
-            <i>файл не выбран</i>
-        </div>
+        <div class="file-name" id="fileNameDisplay"><i>файл не выбран</i></div>
     </div>
-    <p style="font-size:0.85rem; color:#5e6f8d; margin-top: 4px;">Файл сохраняется в конспекте (для печати/экспорта).</p>
 
-    <!-- Кнопки -->
     <div class="btn-group">
         <button class="btn" id="clearBtn" type="button">🗑 Очистить</button>
         <button class="btn" id="saveHtmlBtn" type="button">💾 Скачать HTML</button>
+        <button class="btn btn-accent" id="fillBtn" type="button">✨ Заполнить из КТП</button>
         <button class="btn btn-primary" id="updatePreviewBtn" type="button">🔄 Обновить предпросмотр</button>
     </div>
 
-    <!-- Предпросмотр конспекта -->
     <div class="preview" id="previewBlock">
         <h2>📄 Предпросмотр конспекта</h2>
-        <div class="preview-content" id="previewContent">
-            <!-- сюда рендерится конспект -->
-        </div>
+        <div class="preview-content" id="previewContent"></div>
     </div>
 </div>
 
 <div class="toast" id="toast">Готово</div>
 
 <script>
-    (function() {
-        // Элементы
-        const topicInput = document.getElementById('topic');
-        const gradeInput = document.getElementById('grade');
-        const dateInput = document.getElementById('date');
-        const teacherInput = document.getElementById('teacher');
-        const goalInput = document.getElementById('goal');
-        const knowInput = document.getElementById('know');
-        const canInput = document.getElementById('can');
-        const lessonPlanInput = document.getElementById('lessonPlan');
-        const homeworkInput = document.getElementById('homework');
-        const taskFileInput = document.getElementById('taskFile');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const previewContent = document.getElementById('previewContent');
-        const toastEl = document.getElementById('toast');
+(function() {
+    /* ============================================================
+       БАЗА ТЕМ ИЗ КТП (Математика 5 класс, 2025-26)
+       Формат: { n, topic, hw, section }
+       ============================================================ */
+    const KTP = [
+        { n: 1, topic: 'Десятичная система счисления. Ряд натуральных чисел', hw: 'п.1, №1.8, 1.11', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 2, topic: 'Десятичная система счисления. Ряд натуральных чисел', hw: 'п.2, №1.35, 1.36', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 3, topic: 'Натуральный ряд. Число 0', hw: 'Индивидуальная карточка', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 4, topic: 'Натуральный ряд. Число 0', hw: 'Индивидуальная карточка', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 5, topic: 'Натуральные числа на координатной прямой', hw: 'п.5, №1.155, 1.156, 1.162 (а,б)', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 6, topic: 'Натуральные числа на координатной прямой', hw: 'п.5, №1.157, 1.162 (в,г)', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 7, topic: 'Натуральные числа на координатной прямой', hw: 'п.5, №1.159, 1.161', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 8, topic: 'Сравнение, округление натуральных чисел', hw: 'п.6, №1.186, 1.192', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 9, topic: 'Сравнение, округление натуральных чисел', hw: 'п.6, 1.189, 1190', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 10, topic: 'Сравнение, округление натуральных чисел', hw: 'Индивидуальная карточка', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 11, topic: 'Сравнение, округление натуральных чисел', hw: 'п.6, №1.193', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 12, topic: 'Сравнение, округление натуральных чисел', hw: 'Составить примеры', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 13, topic: 'Арифметические действия с натуральными числами', hw: 'п.8, №2.49, 2.51', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 14, topic: 'Арифметические действия с натуральными числами', hw: 'п.8, №2.48, 2.50', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 15, topic: 'Арифметические действия с натуральными числами', hw: 'п.9, №2.106, 2.109(а,б)', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 16, topic: 'Арифметические действия с натуральными числами', hw: 'п.9, №2.109(в,г), 2.110', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 17, topic: 'Арифметические действия с натуральными числами', hw: 'п.12, №3.55, 3.60(а-г)', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 18, topic: 'Арифметические действия с натуральными числами', hw: 'п.13, №3.130, 3.132', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 19, topic: 'Арифметические действия с натуральными числами', hw: '№3.133, 3.65', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 20, topic: 'Свойства нуля при сложении и умножении, свойства единицы при умножении', hw: 'Составить примеры', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 21, topic: 'Свойства нуля при сложении и умножении, свойства единицы при умножении', hw: 'Стр.93, проверочная работа №1', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 22, topic: 'Переместительное и сочетательное свойства сложения и умножения, распределительное свойство умножения', hw: '№3.60 (д-з)', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 23, topic: 'Переместительное и сочетательное свойства сложения и умножения, распределительное свойство умножения', hw: 'п.12, проверочная работа №2, стр.86', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 24, topic: 'Переместительное и сочетательное свойства сложения и умножения, распределительное свойство умножения', hw: 'РЭШ', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 25, topic: 'Делители и кратные числа, разложение числа на множители', hw: 'п.18, №3.363, 3.364', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 26, topic: 'Делители и кратные числа, разложение числа на множители', hw: '№3.366, 3.367', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 27, topic: 'Делители и кратные числа, разложение числа на множители', hw: '№3.365', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 28, topic: 'Деление с остатком', hw: 'п.14, №3.172', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 29, topic: 'Деление с остатком', hw: 'п.14, №3.173, 3.174', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 30, topic: 'Простые и составные числа', hw: 'п.18, №3.366, 3.368 (а,б)', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 31, topic: 'Простые и составные числа', hw: '№3.368 (в,г)', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 32, topic: 'Признаки делимости на 2, 5, 10, 3, 9', hw: 'п.19, №3.416, 3.418', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 33, topic: 'Признаки делимости на 2, 5, 10, 3, 9', hw: 'Стр.129, проверочная работа №1', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 34, topic: 'Числовые выражения; порядок действий', hw: 'п.10, №2.181(а,б), 2.183', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 35, topic: 'Числовые выражения; порядок действий', hw: 'Индивидуальная карточка', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 36, topic: 'Числовые выражения; порядок действий', hw: 'Индивидуальная карточка', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 37, topic: 'Решение текстовых задач на все арифметические действия, на движение и покупки', hw: '№3.284', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 38, topic: 'Решение текстовых задач на все арифметические действия, на движение и покупки', hw: '№3.294,3.295', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 39, topic: 'Решение текстовых задач на все арифметические действия, на движение и покупки', hw: 'Составить задачи', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 40, topic: 'Решение текстовых задач на все арифметические действия, на движение и покупки', hw: 'Индивидуальная карточка', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 41, topic: 'Решение текстовых задач на все арифметические действия, на движение и покупки', hw: 'РЭШ', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 42, topic: 'Решение текстовых задач на все арифметические действия, на движение и покупки', hw: 'Стр.112, проверочная работа', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 43, topic: 'Контрольная работа по теме "Натуральные числа и нуль"', hw: 'Работа над ошибками', section: 'Натуральные числа. Действия с натуральными числами' },
+        { n: 44, topic: 'Точка, прямая, отрезок, луч. Ломаная', hw: 'п.4, №1.117, 1.118', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 45, topic: 'Измерение длины отрезка, метрические единицы измерения длины', hw: 'Стр.27, Проверочная работа', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 46, topic: 'Измерение длины отрезка, метрические единицы измерения длины', hw: '№1.156, 1.161', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 47, topic: 'Окружность и круг', hw: 'п.25,№5.29,5.30', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 48, topic: 'Окружность и круг', hw: '№5.32,5.33', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 49, topic: 'Практическая работа по теме "Построение узора из окружностей"', hw: 'работа по карточкам', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 50, topic: 'Угол. Прямой, острый, тупой и развёрнутый углы', hw: 'п.50,№7.47,7.49', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 51, topic: 'Угол. Прямой, острый, тупой и развёрнутый углы', hw: 'п.50,№7..48,7.50', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 52, topic: 'Измерение углов', hw: 'п.51,№7.73,7.74', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 53, topic: 'Измерение углов', hw: '№7.76,7.77', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 54, topic: 'Измерение углов', hw: 'работа по карточкам', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 55, topic: 'Практическая работа по теме "Построение углов"', hw: 'работа по карточкам', section: 'Наглядная геометрия. Линии на плоскости' },
+        { n: 56, topic: 'Дробь. Правильные и неправильные дроби', hw: 'п.26,№5.82', section: 'Обыкновенные дроби' },
+        { n: 57, topic: 'Дробь. Правильные и неправильные дроби', hw: 'п.26,№5.86,5.87', section: 'Обыкновенные дроби' },
+        { n: 58, topic: 'Дробь. Правильные и неправильные дроби', hw: 'п.28,№5.157,5.158', section: 'Обыкновенные дроби' },
+        { n: 59, topic: 'Дробь. Правильные и неправильные дроби', hw: '№5.159,5.160', section: 'Обыкновенные дроби' },
+        { n: 60, topic: 'Дробь. Правильные и неправильные дроби', hw: 'стр.29,проверочная работа', section: 'Обыкновенные дроби' },
+        { n: 61, topic: 'Основное свойство дроби', hw: 'п.33,№5.327,5.328', section: 'Обыкновенные дроби' },
+        { n: 62, topic: 'Основное свойство дроби', hw: 'п.34,№№5.357', section: 'Обыкновенные дроби' },
+        { n: 63, topic: 'Основное свойство дроби', hw: 'стр.61 ,проверочная работа', section: 'Обыкновенные дроби' },
+        { n: 64, topic: 'Основное свойство дроби', hw: 'п.35,№№5.387,5.388', section: 'Обыкновенные дроби' },
+        { n: 65, topic: 'Основное свойство дроби', hw: '№5.389', section: 'Обыкновенные дроби' },
+        { n: 66, topic: 'Основное свойство дроби', hw: '№5.391(а)', section: 'Обыкновенные дроби' },
+        { n: 67, topic: 'Основное свойство дроби', hw: 'стр.65,проверочная работа', section: 'Обыкновенные дроби' },
+        { n: 68, topic: 'Сравнение дробей', hw: 'п.36,№5.444', section: 'Обыкновенные дроби' },
+        { n: 69, topic: 'Сравнение дробей', hw: '№5.456', section: 'Обыкновенные дроби' },
+        { n: 70, topic: 'Сравнение дробей', hw: 'стр.73 проверочная работа №1', section: 'Обыкновенные дроби' },
+        { n: 71, topic: 'Сравнение дробей', hw: '', section: 'Обыкновенные дроби' },
+        { n: 72, topic: 'Сложение и вычитание обыкновенных дробей', hw: 'п.29,№5.199,5.200(а,б)', section: 'Обыкновенные дроби' },
+        { n: 73, topic: 'Сложение и вычитание обыкновенных дробей', hw: '№5.198,5.200(в.,г)', section: 'Обыкновенные дроби' },
+        { n: 74, topic: 'Сложение и вычитание обыкновенных дробей', hw: 'п36,стр.73,проверочная работа №2', section: 'Обыкновенные дроби' },
+        { n: 75, topic: 'Сложение и вычитание обыкновенных дробей', hw: '№5.451,5.452', section: 'Обыкновенные дроби' },
+        { n: 76, topic: 'Сложение и вычитание обыкновенных дробей', hw: '№5.454,5.453', section: 'Обыкновенные дроби' },
+        { n: 77, topic: 'Сложение и вычитание обыкновенных дробей', hw: '№5.448,5.449', section: 'Обыкновенные дроби' },
+        { n: 78, topic: 'Сложение и вычитание обыкновенных дробей', hw: 'работа по карточкам', section: 'Обыкновенные дроби' },
+        { n: 79, topic: 'Сложение и вычитание обыкновенных дробей', hw: 'составить свои примеры', section: 'Обыкновенные дроби' },
+        { n: 80, topic: 'Смешанная дробь', hw: 'п.31,№5.270', section: 'Обыкновенные дроби' },
+        { n: 81, topic: 'Смешанная дробь', hw: '№5.271,5.272', section: 'Обыкновенные дроби' },
+        { n: 82, topic: 'Смешанная дробь', hw: 'стр.47,проверочная работа №1', section: 'Обыкновенные дроби' },
+        { n: 83, topic: 'Смешанная дробь', hw: '', section: 'Обыкновенные дроби' },
+        { n: 84, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: 'п.37,№5,486', section: 'Обыкновенные дроби' },
+        { n: 85, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: '№5.487,5.488', section: 'Обыкновенные дроби' },
+        { n: 86, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: '№5.4491(а,б)', section: 'Обыкновенные дроби' },
+        { n: 87, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: 'п.39,№5.562,6.569(а)', section: 'Обыкновенные дроби' },
+        { n: 88, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: '№5.538,5.41', section: 'Обыкновенные дроби' },
+        { n: 89, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: '№5.542,5.548(а)', section: 'Обыкновенные дроби' },
+        { n: 90, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: 'работа по карточкам', section: 'Обыкновенные дроби' },
+        { n: 91, topic: 'Умножение и деление обыкновенных дробей; взаимнообратные дроби', hw: 'составить свои примеры', section: 'Обыкновенные дроби' },
+        { n: 92, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'п.40,№5.562,5.564', section: 'Обыкновенные дроби' },
+        { n: 93, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'стр.89,проверочная работа', section: 'Обыкновенные дроби' },
+        { n: 94, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: '№5.553,5.554', section: 'Обыкновенные дроби' },
+        { n: 95, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Обыкновенные дроби' },
+        { n: 96, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Обыкновенные дроби' },
+        { n: 97, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Обыкновенные дроби' },
+        { n: 98, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Обыкновенные дроби' },
+        { n: 99, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Обыкновенные дроби' },
+        { n: 100, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'составить свои примеры', section: 'Обыкновенные дроби' },
+        { n: 101, topic: 'Применение букв для записи математических выражений и предложений', hw: 'п.10,№2.181,2.183', section: 'Обыкновенные дроби' },
+        { n: 102, topic: 'Применение букв для записи математических выражений и предложений', hw: '№2.184,2.185', section: 'Обыкновенные дроби' },
+        { n: 103, topic: 'Контрольная работа по теме "Обыкновенные дроби"', hw: '', section: 'Обыкновенные дроби' },
+        { n: 104, topic: 'Многоугольники. Четырёхугольник, прямоугольник, квадрат', hw: 'работа по карточкам', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 105, topic: 'Многоугольники. Четырёхугольник, прямоугольник, квадрат', hw: 'начертить свои фигуры', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 106, topic: 'Практическая работа по теме "Построение прямоугольника с заданными сторонами на нелинованной бумаге"', hw: '', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 107, topic: 'Треугольник', hw: 'работа по карточкам', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 108, topic: 'Треугольник', hw: 'работа по карточкам', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 109, topic: 'Площадь и периметр прямоугольника и многоугольников, составленных из прямоугольников, единицы измерения площади', hw: 'работа по карточкам', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 110, topic: 'Площадь и периметр прямоугольника и многоугольников, составленных из прямоугольников, единицы измерения площади', hw: 'п.21,№4.69,4.70', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 111, topic: 'Площадь и периметр прямоугольника и многоугольников, составленных из прямоугольников, единицы измерения площади', hw: '№4.74,4.76', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 112, topic: 'Периметр многоугольника', hw: 'работа по карточкам', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 113, topic: 'Периметр многоугольника', hw: 'работа по карточкам', section: 'Наглядная геометрия. Многоугольники' },
+        { n: 114, topic: 'Десятичная запись дробей', hw: 'п.41,№6.25', section: 'Десятичные дроби' },
+        { n: 115, topic: 'Десятичная запись дробей', hw: 'стр.96,проверочная работа', section: 'Десятичные дроби' },
+        { n: 116, topic: 'Десятичная запись дробей', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 117, topic: 'Сравнение десятичных дробей', hw: 'п.42,№6.61,6.62', section: 'Десятичные дроби' },
+        { n: 118, topic: 'Сравнение десятичных дробей', hw: 'стр.102,проверочная работа №1', section: 'Десятичные дроби' },
+        { n: 119, topic: 'Сравнение десятичных дробей', hw: 'п.42,№6.64', section: 'Десятичные дроби' },
+        { n: 120, topic: 'Сравнение десятичных дробей', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 121, topic: 'Сравнение десятичных дробей', hw: 'составить свои примеры', section: 'Десятичные дроби' },
+        { n: 122, topic: 'Действия с десятичными дробями', hw: 'п.43,№6.118', section: 'Десятичные дроби' },
+        { n: 123, topic: 'Действия с десятичными дробями', hw: '№6.119', section: 'Десятичные дроби' },
+        { n: 124, topic: 'Действия с десятичными дробями', hw: '№6.127', section: 'Десятичные дроби' },
+        { n: 125, topic: 'Действия с десятичными дробями', hw: 'п.47,№6.305(а-Е0', section: 'Десятичные дроби' },
+        { n: 126, topic: 'Действия с десятичными дробями', hw: '№6.305(Ж-м)', section: 'Десятичные дроби' },
+        { n: 127, topic: 'Действия с десятичными дробями', hw: 'п.45, №6.201, 6.202(а)', section: 'Десятичные дроби' },
+        { n: 128, topic: 'Действия с десятичными дробями', hw: 'Стр.122, проверочная работа', section: 'Десятичные дроби' },
+        { n: 129, topic: 'Действия с десятичными дробями', hw: 'п.47,№6.305', section: 'Десятичные дроби' },
+        { n: 130, topic: 'Действия с десятичными дробями', hw: '№6.304', section: 'Десятичные дроби' },
+        { n: 131, topic: 'Действия с десятичными дробями', hw: 'п.46,№6.246', section: 'Десятичные дроби' },
+        { n: 132, topic: 'Действия с десятичными дробями', hw: '№6.247', section: 'Десятичные дроби' },
+        { n: 133, topic: 'Действия с десятичными дробями', hw: '№6.253(а-в)', section: 'Десятичные дроби' },
+        { n: 134, topic: 'Действия с десятичными дробями', hw: '№6.251', section: 'Десятичные дроби' },
+        { n: 135, topic: 'Действия с десятичными дробями', hw: 'п.48,№6.359(а-г)', section: 'Десятичные дроби' },
+        { n: 136, topic: 'Действия с десятичными дробями', hw: 'Стр.142, проверочная работа №1', section: 'Десятичные дроби' },
+        { n: 137, topic: 'Действия с десятичными дробями', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 138, topic: 'Действия с десятичными дробями', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 139, topic: 'Действия с десятичными дробями', hw: 'составить свои примеры', section: 'Десятичные дроби' },
+        { n: 140, topic: 'Действия с десятичными дробями', hw: '', section: 'Десятичные дроби' },
+        { n: 141, topic: 'Округление десятичных дробей', hw: 'п.44,№6.162', section: 'Десятичные дроби' },
+        { n: 142, topic: 'Округление десятичных дробей', hw: '№6.163,6.164', section: 'Десятичные дроби' },
+        { n: 143, topic: 'Округление десятичных дробей', hw: '№6.166,6.170(а)', section: 'Десятичные дроби' },
+        { n: 144, topic: 'Округление десятичных дробей', hw: 'стр 116 ,проверочная работа', section: 'Десятичные дроби' },
+        { n: 145, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 146, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 147, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 148, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 149, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: '№6.167,6.168', section: 'Десятичные дроби' },
+        { n: 150, topic: 'Решение текстовых задач, содержащих дроби. Основные задачи на дроби', hw: 'работа по карточкам', section: 'Десятичные дроби' },
+        { n: 151, topic: 'Контрольная работа по теме "Десятичные дроби"', hw: '', section: 'Десятичные дроби' },
+        { n: 152, topic: 'Многогранники. Изображение многогранников. Модели пространственных тел', hw: 'работа по карточкам', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 153, topic: 'Многогранники. Изображение многогранников. Модели пространственных тел', hw: 'работа по карточкам', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 154, topic: 'Прямоугольный параллелепипед, куб. Развёртки куба и параллелепипеда', hw: 'п.23, №4.146, 4.147', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 155, topic: 'Прямоугольный параллелепипед, куб. Развёртки куба и параллелепипеда', hw: 'работа по карточкам', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 156, topic: 'Практическая работа по теме "Развёртка куба"', hw: 'изготовить макет', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 157, topic: 'Объём куба, прямоугольного параллелепипеда', hw: 'п.24, №4.172, 4.173', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 158, topic: 'Объём куба, прямоугольного параллелепипеда', hw: '№4.174', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 159, topic: 'Объём куба, прямоугольного параллелепипеда', hw: 'работа по карточкам', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 160, topic: 'Объём куба, прямоугольного параллелепипеда', hw: 'Составить примеры', section: 'Наглядная геометрия. Тела и фигуры в пространстве' },
+        { n: 161, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний / Всероссийская проверочная работа', hw: 'решение задач ВПР', section: 'Повторение и обобщение' },
+        { n: 162, topic: 'Итоговая контрольная работа / Всероссийская проверочная работа', hw: 'работа по карточкам', section: 'Повторение и обобщение' },
+        { n: 163, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'работа по карточкам', section: 'Повторение и обобщение' },
+        { n: 164, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'работа по карточкам', section: 'Повторение и обобщение' },
+        { n: 165, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'Составить примеры', section: 'Повторение и обобщение' },
+        { n: 166, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'работа по карточкам', section: 'Повторение и обобщение' },
+        { n: 167, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'Индивидуальная карточка', section: 'Повторение и обобщение' },
+        { n: 168, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'Индивидуальная карточка', section: 'Повторение и обобщение' },
+        { n: 169, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'Индивидуальная карточка', section: 'Повторение и обобщение' },
+        { n: 170, topic: 'Повторение основных понятий и методов курса 5 класса, обобщение знаний', hw: 'Индивидуальная карточка', section: 'Повторение и обобщение' },
+    ];
 
-        // Хранилище для файла (в base64, если нужно)
-        let attachedFileData = null;      // { name, type, dataURL }
-        let attachedFileRaw = null;       // File object (для скачивания)
-
-        // Показать уведомление
-        function showToast(msg) {
-            toastEl.textContent = msg || 'Готово';
-            toastEl.classList.add('show');
-            setTimeout(() => toastEl.classList.remove('show'), 2200);
+    // Уникальные темы (сгруппированные) для автодополнения
+    const uniqueTopics = [];
+    const seen = new Set();
+    KTP.forEach(item => {
+        const key = item.topic;
+        if (!seen.has(key)) {
+            seen.add(key);
+            const lessons = KTP.filter(x => x.topic === key).map(x => x.n);
+            uniqueTopics.push({ topic: key, lessons, section: item.section, hw: item.hw });
         }
+    });
 
-        // Обновить отображение имени файла
-        function updateFileNameDisplay() {
-            if (attachedFileData) {
-                fileNameDisplay.innerHTML = `<i>📎 ${attachedFileData.name}</i>`;
-            } else {
-                fileNameDisplay.innerHTML = `<i>файл не выбран</i>`;
-            }
+    /* ============================================================
+       ЭЛЕМЕНТЫ
+       ============================================================ */
+    const topicInput = document.getElementById('topic');
+    const acList = document.getElementById('acList');
+    const gradeInput = document.getElementById('grade');
+    const dateInput = document.getElementById('date');
+    const teacherInput = document.getElementById('teacher');
+    const lessonNumInput = document.getElementById('lessonNum');
+    const goalInput = document.getElementById('goal');
+    const knowInput = document.getElementById('know');
+    const canInput = document.getElementById('can');
+    const lessonPlanInput = document.getElementById('lessonPlan');
+    const homeworkInput = document.getElementById('homework');
+    const tasksInput = document.getElementById('tasks');
+    const taskFileInput = document.getElementById('taskFile');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const previewContent = document.getElementById('previewContent');
+    const toastEl = document.getElementById('toast');
+    const sectionTag = document.getElementById('sectionTag');
+
+    let attachedFileData = null;
+
+    function showToast(msg) {
+        toastEl.textContent = msg || 'Готово';
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 2200);
+    }
+
+    /* ============================================================
+       АВТОДОПОЛНЕНИЕ ТЕМЫ
+       ============================================================ */
+    let activeIndex = -1;
+    let currentMatches = [];
+
+    function renderMatches(matches) {
+        currentMatches = matches;
+        activeIndex = -1;
+        if (!matches.length) {
+            acList.classList.remove('show');
+            acList.innerHTML = '';
+            return;
         }
+        acList.innerHTML = matches.map((m, i) => {
+            const lessonsStr = m.lessons.length > 3
+                ? m.lessons.slice(0, 3).join(', ') + '…'
+                : m.lessons.join(', ');
+            return `<div class="autocomplete-item" data-index="${i}">
+                <span class="num">№${lessonsStr}</span>${escapeHtml(m.topic)}
+                <span class="hw">ДЗ: ${escapeHtml(m.hw || '—')}</span>
+            </div>`;
+        }).join('');
+        acList.classList.add('show');
 
-        // Загрузка файла
-        taskFileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) {
-                attachedFileData = null;
-                attachedFileRaw = null;
-                updateFileNameDisplay();
-                return;
-            }
-            attachedFileRaw = file;
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                attachedFileData = {
-                    name: file.name,
-                    type: file.type,
-                    dataURL: ev.target.result
-                };
-                updateFileNameDisplay();
-                showToast('Файл прикреплён: ' + file.name);
-            };
-            reader.readAsDataURL(file);
+        acList.querySelectorAll('.autocomplete-item').forEach(el => {
+            el.addEventListener('click', () => {
+                const idx = parseInt(el.dataset.index, 10);
+                selectTopic(currentMatches[idx]);
+            });
         });
+    }
 
-        // Очистка полей (кроме файла? файл тоже очистим)
-        document.getElementById('clearBtn').addEventListener('click', function() {
-            topicInput.value = '';
-            gradeInput.value = '';
-            dateInput.value = '';
-            teacherInput.value = '';
-            goalInput.value = '';
-            knowInput.value = '';
-            canInput.value = '';
-            lessonPlanInput.value = '';
-            homeworkInput.value = '';
-            taskFileInput.value = '';
+    function escapeHtml(text) {
+        if (!text) return '';
+        return String(text).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function filterTopics(query) {
+        const q = query.trim().toLowerCase();
+        if (!q) return uniqueTopics.slice(0, 12);
+        return uniqueTopics.filter(t => t.topic.toLowerCase().includes(q)).slice(0, 12);
+    }
+
+    topicInput.addEventListener('input', function() {
+        const q = this.value;
+        const matches = filterTopics(q);
+        renderMatches(matches);
+    });
+
+    topicInput.addEventListener('focus', function() {
+        if (this.value.trim() === '') {
+            renderMatches(uniqueTopics.slice(0, 12));
+        } else {
+            renderMatches(filterTopics(this.value));
+        }
+    });
+
+    topicInput.addEventListener('keydown', function(e) {
+        if (!acList.classList.contains('show')) return;
+        const items = acList.querySelectorAll('.autocomplete-item');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, items.length - 1);
+            updateActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            updateActive(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIndex >= 0 && currentMatches[activeIndex]) {
+                selectTopic(currentMatches[activeIndex]);
+            } else if (currentMatches.length) {
+                selectTopic(currentMatches[0]);
+            }
+        } else if (e.key === 'Escape') {
+            acList.classList.remove('show');
+        }
+    });
+
+    function updateActive(items) {
+        items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+        if (items[activeIndex]) items[activeIndex].scrollIntoView({ block: 'nearest' });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!topicInput.contains(e.target) && !acList.contains(e.target)) {
+            acList.classList.remove('show');
+        }
+    });
+
+    /* ============================================================
+       ВЫБОР ТЕМЫ → АВТОЗАПОЛНЕНИЕ
+       ============================================================ */
+    function selectTopic(topicObj) {
+        if (!topicObj) return;
+        topicInput.value = topicObj.topic;
+        acList.classList.remove('show');
+
+        // Номер урока — первый из списка
+        lessonNumInput.value = topicObj.lessons[0] || '';
+
+        // Раздел
+        sectionTag.style.display = 'inline-block';
+        sectionTag.textContent = topicObj.section;
+
+        // Домашнее задание
+        homeworkInput.value = topicObj.hw || '';
+
+        // Задания (дублируем ДЗ, можно редактировать)
+        tasksInput.value = topicObj.hw
+            ? 'Выполнить: ' + topicObj.hw
+            : 'Задания к уроку не указаны в КТП — опишите вручную.';
+
+        // Цель — шаблон по разделу
+        goalInput.value = buildGoal(topicObj.topic, topicObj.section);
+
+        // Знать / уметь — шаблоны по разделу
+        const kk = buildKnowCan(topicObj.section);
+        knowInput.value = kk.know;
+        canInput.value = kk.can;
+
+        // Ход урока — шаблон
+        lessonPlanInput.value = buildPlan(topicObj.topic, topicObj.section);
+
+        updatePreview();
+        showToast('Тема выбрана: ' + topicObj.topic);
+    }
+
+    /* ============================================================
+       ШАБЛОНЫ ПО РАЗДЕЛАМ
+       ============================================================ */
+    function buildGoal(topic, section) {
+        return `Сформировать представление по теме «${topic}»; отработать практические навыки в рамках раздела «${section}».`;
+    }
+
+    function buildKnowCan(section) {
+        const map = {
+            'Натуральные числа. Действия с натуральными числами': {
+                know: 'Понятия натурального числа, разряда, класса; свойства арифметических действий; признаки делимости; порядок действий.',
+                can: 'Записывать и сравнивать натуральные числа; выполнять арифметические действия; решать текстовые задачи; применять свойства действий.'
+            },
+            'Наглядная геометрия. Линии на плоскости': {
+                know: 'Понятия точки, прямой, отрезка, луча, ломаной, окружности, угла; единицы измерения длины и углов.',
+                can: 'Чертить геометрические фигуры; измерять длины отрезков и углы; строить окружности и углы заданной величины.'
+            },
+            'Обыкновенные дроби': {
+                know: 'Понятие обыкновенной дроби; правильные и неправильные дроби; основное свойство дроби; смешанные числа.',
+                can: 'Сравнивать, складывать, вычитать, умножать и делить обыкновенные дроби; решать задачи на дроби.'
+            },
+            'Наглядная геометрия. Многоугольники': {
+                know: 'Понятия многоугольника, прямоугольника, квадрата, треугольника; формулы периметра и площади.',
+                can: 'Строить многоугольники; вычислять периметр и площадь; решать практические задачи.'
+            },
+            'Десятичные дроби': {
+                know: 'Понятие десятичной дроби; правила сравнения, сложения, вычитания, умножения и деления десятичных дробей; округление.',
+                can: 'Выполнять действия с десятичными дробями; округлять; решать текстовые задачи.'
+            },
+            'Наглядная геометрия. Тела и фигуры в пространстве': {
+                know: 'Понятия многогранника, параллелепипеда, куба; формулу объёма.',
+                can: 'Изображать многогранники; строить развёртки; вычислять объём куба и параллелепипеда.'
+            },
+            'Повторение и обобщение': {
+                know: 'Основные понятия и методы курса математики 5 класса.',
+                can: 'Применять полученные знания при решении задач, в том числе формата ВПР.'
+            }
+        };
+        return map[section] || {
+            know: 'Основные понятия по теме урока.',
+            can: 'Применять полученные знания на практике.'
+        };
+    }
+
+    function buildPlan(topic, section) {
+        return `1. Организационный момент (2 мин).
+2. Актуализация знаний: устный опрос по предыдущей теме (5 мин).
+3. Изучение нового материала по теме «${topic}» (15 мин).
+4. Первичное закрепление: работа с учебником и заданиями из КТП (15 мин).
+5. Самостоятельная работа / практическая часть (5 мин).
+6. Итог урока, рефлексия, запись домашнего задания (3 мин).`;
+    }
+
+    /* ============================================================
+       ЗАПОЛНИТЬ ИЗ КТП (кнопка)
+       ============================================================ */
+    document.getElementById('fillBtn').addEventListener('click', function() {
+        const q = topicInput.value.trim();
+        if (!q) {
+            showToast('Сначала введите или выберите тему');
+            return;
+        }
+        const found = uniqueTopics.find(t => t.topic.toLowerCase() === q.toLowerCase())
+            || uniqueTopics.find(t => t.topic.toLowerCase().includes(q.toLowerCase()));
+        if (found) {
+            selectTopic(found);
+        } else {
+            showToast('Тема не найдена в КТП — заполните вручную');
+        }
+    });
+
+    /* ============================================================
+       ФАЙЛ
+       ============================================================ */
+    taskFileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) {
             attachedFileData = null;
-            attachedFileRaw = null;
-            updateFileNameDisplay();
+            fileNameDisplay.innerHTML = '<i>файл не выбран</i>';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            attachedFileData = { name: file.name, type: file.type, dataURL: ev.target.result };
+            fileNameDisplay.innerHTML = `<i>📎 ${escapeHtml(file.name)}</i>`;
+            showToast('Файл прикреплён: ' + file.name);
             updatePreview();
-            showToast('Поля очищены');
-        });
+        };
+        reader.readAsDataURL(file);
+    });
 
-        // Сформировать HTML-представление конспекта (для предпросмотра и скачивания)
-        function buildLessonHtml() {
-            const topic = topicInput.value.trim() || '(тема не указана)';
-            const grade = gradeInput.value.trim() || '—';
-            const date = dateInput.value ? new Date(dateInput.value).toLocaleDateString('ru-RU') : '—';
-            const teacher = teacherInput.value.trim() || '—';
-            const goal = goalInput.value.trim() || '—';
-            const know = knowInput.value.trim() || '—';
-            const can = canInput.value.trim() || '—';
-            const plan = lessonPlanInput.value.trim() || '—';
-            const hw = homeworkInput.value.trim() || '—';
+    /* ============================================================
+       ПРЕДПРОСМОТР
+       ============================================================ */
+    function buildLessonHtml() {
+        const topic = topicInput.value.trim() || '(тема не указана)';
+        const grade = gradeInput.value.trim() || '—';
+        const date = dateInput.value ? new Date(dateInput.value).toLocaleDateString('ru-RU') : '—';
+        const teacher = teacherInput.value.trim() || '—';
+        const lessonNum = lessonNumInput.value.trim();
+        const goal = goalInput.value.trim() || '—';
+        const know = knowInput.value.trim() || '—';
+        const can = canInput.value.trim() || '—';
+        const plan = lessonPlanInput.value.trim() || '—';
+        const hw = homeworkInput.value.trim() || '—';
+        const tasks = tasksInput.value.trim() || '';
 
-            let fileHtml = '';
-            if (attachedFileData) {
-                // Безопасное экранирование имени
-                const safeName = attachedFileData.name.replace(/[&<>"]/g, function(m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    if (m === '"') return '&quot;';
-                    return m;
-                });
-                // В предпросмотре показываем как текст + возможность скачать (в экспорте будет ссылка)
-                fileHtml = `<div style="margin-top:12px; background:#eef4fa; border-radius:12px; padding:10px 16px;">
-                    📎 <strong>Файл с заданием:</strong> ${safeName}
-                </div>`;
-            }
-
-            // Экранируем значения для вставки в HTML
-            function escapeHtml(text) {
-                if (!text) return '';
-                return text.replace(/[&<>"]/g, function(m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    if (m === '"') return '&quot;';
-                    return m;
-                });
-            }
-
-            const html = `
-                <div style="font-family: 'Segoe UI', Roboto, sans-serif; max-width:800px; margin:0 auto;">
-                    <h1 style="color:#155799; border-bottom:3px solid #cfddee; padding-bottom:12px;">Конспект урока</h1>
-                    <table style="width:100%; border-collapse:collapse; margin:16px 0; background:#f9fcff; border-radius:16px;">
-                        <tr><td style="padding:10px 16px; font-weight:600; width:140px;">Тема урока:</td><td style="padding:10px 16px;">${escapeHtml(topic)}</td></tr>
-                        <tr><td style="padding:10px 16px; font-weight:600;">Класс:</td><td style="padding:10px 16px;">${escapeHtml(grade)}</td></tr>
-                        <tr><td style="padding:10px 16px; font-weight:600;">Дата:</td><td style="padding:10px 16px;">${escapeHtml(date)}</td></tr>
-                        <tr><td style="padding:10px 16px; font-weight:600;">Учитель:</td><td style="padding:10px 16px;">${escapeHtml(teacher)}</td></tr>
-                    </table>
-
-                    <h2 style="color:#1e5b9c; margin-top:28px;">🎯 Цель урока</h2>
-                    <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(goal).replace(/\n/g, '<br>')}</p>
-
-                    <h2 style="color:#1e5b9c;">📌 Знать / понимать</h2>
-                    <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(know).replace(/\n/g, '<br>')}</p>
-
-                    <h2 style="color:#1e5b9c;">🛠 Уметь</h2>
-                    <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(can).replace(/\n/g, '<br>')}</p>
-
-                    <h2 style="color:#1e5b9c;">📖 Ход урока</h2>
-                    <div style="background:#f2f8ff; padding:14px 18px; border-radius:14px; white-space:pre-wrap;">${escapeHtml(plan)}</div>
-
-                    <h2 style="color:#1e5b9c;">🏠 Домашнее задание</h2>
-                    <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(hw)}</p>
-
-                    ${fileHtml ? `<h2 style="color:#1e5b9c;">📎 Прикреплённый файл</h2>${fileHtml}` : ''}
-                    <hr style="margin:28px 0 12px; border:0; border-top:1px solid #d7e5f2;">
-                    <p style="color:#7b8fa8; font-size:0.85rem;">Конспект сгенерирован в конструкторе урока</p>
-                </div>
-            `;
-            return html;
+        let fileHtml = '';
+        if (attachedFileData) {
+            const safeName = escapeHtml(attachedFileData.name);
+            fileHtml = `<div style="margin-top:12px; background:#eef4fa; border-radius:12px; padding:10px 16px;">📎 <strong>Файл с заданием:</strong> ${safeName}</div>`;
         }
 
-        // Обновить предпросмотр (без файла-вложения, просто имя)
-        function updatePreview() {
-            previewContent.innerHTML = buildLessonHtml();
+        return `
+            <div style="font-family:'Segoe UI',Roboto,sans-serif; max-width:800px; margin:0 auto;">
+                <h1 style="color:#155799; border-bottom:3px solid #cfddee; padding-bottom:12px;">Конспект урока${lessonNum ? ' №' + escapeHtml(lessonNum) : ''}</h1>
+                <table style="width:100%; border-collapse:collapse; margin:16px 0; background:#f9fcff; border-radius:16px;">
+                    <tr><td style="padding:10px 16px; font-weight:600; width:140px;">Тема урока:</td><td style="padding:10px 16px;">${escapeHtml(topic)}</td></tr>
+                    <tr><td style="padding:10px 16px; font-weight:600;">Класс:</td><td style="padding:10px 16px;">${escapeHtml(grade)}</td></tr>
+                    <tr><td style="padding:10px 16px; font-weight:600;">Дата:</td><td style="padding:10px 16px;">${escapeHtml(date)}</td></tr>
+                    <tr><td style="padding:10px 16px; font-weight:600;">Учитель:</td><td style="padding:10px 16px;">${escapeHtml(teacher)}</td></tr>
+                    ${lessonNum ? `<tr><td style="padding:10px 16px; font-weight:600;">№ урока в КТП:</td><td style="padding:10px 16px;">${escapeHtml(lessonNum)}</td></tr>` : ''}
+                </table>
+
+                <h2 style="color:#1e5b9c; margin-top:28px;">🎯 Цель урока</h2>
+                <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(goal).replace(/\n/g, '<br>')}</p>
+
+                <h2 style="color:#1e5b9c;">📌 Знать / понимать</h2>
+                <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(know).replace(/\n/g, '<br>')}</p>
+
+                <h2 style="color:#1e5b9c;">🛠 Уметь</h2>
+                <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(can).replace(/\n/g, '<br>')}</p>
+
+                <h2 style="color:#1e5b9c;">📖 Ход урока</h2>
+                <div style="background:#f2f8ff; padding:14px 18px; border-radius:14px; white-space:pre-wrap;">${escapeHtml(plan)}</div>
+
+                <h2 style="color:#1e5b9c;">📝 Задания к уроку</h2>
+                <div style="background:#f2f8ff; padding:14px 18px; border-radius:14px; white-space:pre-wrap;">${escapeHtml(tasks) || '—'}</div>
+
+                <h2 style="color:#1e5b9c;">🏠 Домашнее задание</h2>
+                <p style="background:#f2f8ff; padding:14px 18px; border-radius:14px;">${escapeHtml(hw)}</p>
+
+                ${fileHtml}
+                <hr style="margin:28px 0 12px; border:0; border-top:1px solid #d7e5f2;">
+                <p style="color:#7b8fa8; font-size:0.85rem;">Конспект сгенерирован в конструкторе урока (база КТП 5 класс)</p>
+            </div>
+        `;
+    }
+
+    function updatePreview() {
+        previewContent.innerHTML = buildLessonHtml();
+    }
+
+    document.getElementById('updatePreviewBtn').addEventListener('click', function() {
+        updatePreview();
+        showToast('Предпросмотр обновлён');
+    });
+
+    /* ============================================================
+       СКАЧАТЬ HTML
+       ============================================================ */
+    document.getElementById('saveHtmlBtn').addEventListener('click', function() {
+        const topic = topicInput.value.trim() || 'конспект_урока';
+        const safeTopic = topic.replace(/[^а-яА-ЯёЁa-zA-Z0-9]/g, '_').substring(0, 40);
+        const fileName = `конспект_${safeTopic}.html`;
+
+        let lessonBody = buildLessonHtml();
+
+        if (attachedFileData) {
+            const safeDownloadName = escapeHtml(attachedFileData.name);
+            const linkHtml = `<div style="margin:18px 0; padding:16px 20px; background:#e9f2fd; border-radius:18px;">
+                <strong>📎 Прикреплённый файл:</strong> ${safeDownloadName}<br>
+                <a href="${attachedFileData.dataURL}" download="${safeDownloadName}" style="display:inline-block; margin-top:10px; background:#1e5b9c; color:white; padding:8px 20px; border-radius:30px; text-decoration:none; font-weight:500;">⬇ Скачать файл</a>
+            </div>`;
+            const insertPos = lessonBody.lastIndexOf('<hr');
+            lessonBody = insertPos !== -1
+                ? lessonBody.slice(0, insertPos) + linkHtml + lessonBody.slice(insertPos)
+                : lessonBody + linkHtml;
         }
 
-        // Кнопка "Обновить предпросмотр"
-        document.getElementById('updatePreviewBtn').addEventListener('click', function() {
-            updatePreview();
-            showToast('Предпросмотр обновлён');
-        });
-
-        // Скачать HTML-файл с конспектом (включая вложение как dataURL)
-        document.getElementById('saveHtmlBtn').addEventListener('click', function() {
-            const topic = topicInput.value.trim() || 'конспект_урока';
-            const safeTopic = topic.replace(/[^а-яА-ЯёЁa-zA-Z0-9]/g, '_').substring(0, 40);
-            const fileName = `конспект_${safeTopic}.html`;
-
-            // Собираем полноценный HTML-документ
-            const lessonBody = buildLessonHtml();
-
-            // Если есть файл — добавим ссылку для скачивания (dataURL)
-            let fileBlock = '';
-            if (attachedFileData) {
-                // Экранируем имя для атрибута download
-                const safeDownloadName = attachedFileData.name.replace(/[&<>"]/g, function(m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    if (m === '"') return '&quot;';
-                    return m;
-                });
-                // Ссылка для скачивания файла (работает в браузере)
-                const linkHtml = `<div style="margin:18px 0; padding:16px 20px; background:#e9f2fd; border-radius:18px;">
-                    <strong>📎 Прикреплённый файл:</strong> ${safeDownloadName}<br>
-                    <a href="${attachedFileData.dataURL}" download="${safeDownloadName}" style="display:inline-block; margin-top:10px; background:#1e5b9c; color:white; padding:8px 20px; border-radius:30px; text-decoration:none; font-weight:500;">⬇ Скачать файл</a>
-                    <span style="color:#5e6f8d; font-size:0.85rem; margin-left:12px;">(встроен в конспект)</span>
-                </div>`;
-                // Заменяем или добавляем блок с файлом в lessonBody
-                // Найдём место перед закрывающим div (или просто вставим после ДЗ)
-                // Проще: в buildLessonHtml() уже есть fileHtml, но без ссылки. Переопределим fileHtml с ссылкой
-                // Пересоберём buildLessonHtml с флагом? Проще заменить в строке.
-                // Но чтобы не усложнять, вставлю fileBlock в конец перед <hr>
-                const insertPos = lessonBody.lastIndexOf('<hr');
-                if (insertPos !== -1) {
-                    lessonBody = lessonBody.slice(0, insertPos) + linkHtml + lessonBody.slice(insertPos);
-                } else {
-                    lessonBody += linkHtml;
-                }
-            }
-
-            const fullHtml = `<!DOCTYPE html>
+        const fullHtml = `<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Конспект урока — ${topic.replace(/[&<>"]/g, '')}</title>
-    <style>
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: #f4f7fc; margin: 0; padding: 30px 20px; display: flex; justify-content: center; }
-        .lesson-card { max-width: 900px; width: 100%; background: white; border-radius: 32px; box-shadow: 0 12px 30px rgba(0,20,30,0.1); padding: 36px 40px; }
-        @media print { body { background: white; } .lesson-card { box-shadow: none; padding: 10px; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Конспект урока — ${escapeHtml(topic)}</title>
+<style>
+body { font-family:'Segoe UI',Roboto,sans-serif; background:#f4f7fc; margin:0; padding:30px 20px; display:flex; justify-content:center; }
+.lesson-card { max-width:900px; width:100%; background:white; border-radius:32px; box-shadow:0 12px 30px rgba(0,20,30,0.1); padding:36px 40px; }
+@media print { body { background:white; } .lesson-card { box-shadow:none; padding:10px; } }
+</style>
 </head>
-<body>
-    <div class="lesson-card">
-        ${lessonBody}
-    </div>
-</body>
+<body><div class="lesson-card">${lessonBody}</div></body>
 </html>`;
 
-            // Скачивание
-            const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('Файл сохранён: ' + fileName);
-        });
+        const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Файл сохранён: ' + fileName);
+    });
 
-        // Автообновление предпросмотра при изменении полей (с задержкой)
-        let debounceTimer;
-        function autoUpdate() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                updatePreview();
-            }, 400);
-        }
-
-        // Поля, при изменении которых обновляем предпросмотр
-        [topicInput, gradeInput, dateInput, teacherInput, goalInput, knowInput, canInput, lessonPlanInput, homeworkInput].forEach(el => {
-            el.addEventListener('input', autoUpdate);
-        });
-
-        // При изменении файла – обновляем предпросмотр
-        taskFileInput.addEventListener('change', function() {
-            // небольшая задержка, чтобы attachedFileData успел обновиться
-            setTimeout(updatePreview, 100);
-        });
-
-        // Инициализация: установить сегодняшнюю дату, если пусто
-        if (!dateInput.value) {
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.value = today;
-        }
-
-        // Первичное обновление предпросмотра
+    /* ============================================================
+       ОЧИСТКА
+       ============================================================ */
+    document.getElementById('clearBtn').addEventListener('click', function() {
+        topicInput.value = '';
+        gradeInput.value = '5';
+        teacherInput.value = 'Светлакова Вера Андреевна';
+        lessonNumInput.value = '';
+        goalInput.value = '';
+        knowInput.value = '';
+        canInput.value = '';
+        lessonPlanInput.value = '';
+        homeworkInput.value = '';
+        tasksInput.value = '';
+        taskFileInput.value = '';
+        attachedFileData = null;
+        fileNameDisplay.innerHTML = '<i>файл не выбран</i>';
+        sectionTag.style.display = 'none';
+        acList.classList.remove('show');
         updatePreview();
+        showToast('Поля очищены');
+    });
 
-        // Восстановление из localStorage (по желанию)
-        function loadFromLocalStorage() {
-            try {
-                const saved = localStorage.getItem('lessonDraft');
-                if (!saved) return;
-                const data = JSON.parse(saved);
-                topicInput.value = data.topic || '';
-                gradeInput.value = data.grade || '';
-                dateInput.value = data.date || '';
-                teacherInput.value = data.teacher || '';
-                goalInput.value = data.goal || '';
-                knowInput.value = data.know || '';
-                canInput.value = data.can || '';
-                lessonPlanInput.value = data.lessonPlan || '';
-                homeworkInput.value = data.homework || '';
-                // Файл не восстанавливаем из localStorage (слишком большой), но можно сохранить имя
-                if (data.fileName) {
-                    fileNameDisplay.innerHTML = `<i>📎 ${data.fileName} (не загружен)</i>`;
-                }
-                updatePreview();
-            } catch (e) {}
-        }
-
-        // Сохраняем черновик при изменении (без файла)
-        function saveDraft() {
-            try {
-                const data = {
-                    topic: topicInput.value,
-                    grade: gradeInput.value,
-                    date: dateInput.value,
-                    teacher: teacherInput.value,
-                    goal: goalInput.value,
-                    know: knowInput.value,
-                    can: canInput.value,
-                    lessonPlan: lessonPlanInput.value,
-                    homework: homeworkInput.value,
-                    fileName: attachedFileData ? attachedFileData.name : ''
-                };
-                localStorage.setItem('lessonDraft', JSON.stringify(data));
-            } catch (e) {}
-        }
-
-        // Подписка на сохранение черновика
-        [topicInput, gradeInput, dateInput, teacherInput, goalInput, knowInput, canInput, lessonPlanInput, homeworkInput].forEach(el => {
-            el.addEventListener('input', saveDraft);
-        });
-
-        // Попробуем загрузить черновик
-        loadFromLocalStorage();
-        // Обновим предпросмотр ещё раз (если что-то загрузилось)
-        updatePreview();
-
-        // При закрытии/перезагрузке – сохраняем
-        window.addEventListener('beforeunload', saveDraft);
-    })();
+    /* ============================================================
+       ИНИЦИАЛИЗАЦИЯ
+       ============================================================ */
+    if (!dateInput.value) {
+        dateInput.value = new Date().toISOString().split('T')[0];
+    }
+    updatePreview();
+})();
 </script>
 </body>
 </html>
